@@ -1,0 +1,33 @@
+#!/usr/bin/env python2
+import sys
+
+try:
+    from distutils.core import setup
+except:
+    if sys.version[0] < 2:
+        print "jabber.py requires at least python 2.0"
+        print "Setup cannot continue."
+        sys.exit(1)
+    print "You appear not to have the Python distutils modules"
+    print "installed. Setup cannot continue."
+    print "You can manually install jabberpy by coping the jabber"
+    print "directory to your /python-libdir/site-packages"    
+    print "directory."
+    sys.exit(1)
+    
+setup(name="jabber.py",
+      version="0.1",
+      #py_modules=["xmlstream","jabber"],
+      packages=["jabber"],
+      description="Python xmlstream and jabber IM protocol libs",
+      author="A. R. Diederich",
+      author_email="andrewdied@gmail.com",
+      url="https://launchpad.net/chupycabra",
+      license="LGPL"
+      )
+
+
+
+
+
+

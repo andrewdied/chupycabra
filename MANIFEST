@@ -1,0 +1,16 @@
+README
+CREDITS
+jabber.py
+xmlstream.py
+setup.py
+examples/README
+examples/jrpc.py
+examples/test_client.py
+examples/pygtkjab.py
+examples/pyqtjab.py
+examples/mailchecker.py
+examples/offline.xpm
+examples/online.xpm
+examples/pending.xpm
+docs/
+

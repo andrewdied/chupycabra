@@ -1,0 +1,83 @@
+Chupycabra  0.1 README A. R. Diederich <andrewdied@gmail.com
+
+Introduction
+-------------
+Chupycabra is a Python module for the jabber instant messaging protocol.
+The library is forked from the jabberpy project, 
+http://jabberpy.sourceforge.net/, written by Matthew Allum.  
+
+While the goal is XMPP compliance, some old jabber elements will remain.
+It deals with the xml parsing and socket code, leaving the programmer
+to concentrate on developing quality jabber based applications with Python.
+
+The eventual aim is to produce a fully featured easy to use library for
+creating both jabber clients and servers, especially for use in testing
+and compliance sweets. 
+
+Initially chupycabra requires python 2.x.  This will rapidly include more
+recent features in python, and require 2.6.  No decision has been made for
+when to move to jabber 3.x, though the code will be tested for that move.
+
+It is developed on Linux but may run happily on over Unix's and win32.
+
+For more infomation see https://launchpad.net/chupycabra.
+
+Whats Needed
+------------- 
+You need python >=2.0 with the expat modules installed. You can check
+for the expat modules by opening up a Python shell ( make sure it 
+reports at least version 2 ) and enter 'import xml.parsers.expat' . 
+If you get an error you need to install the python expat libs... 
+
+To do this;
+
+For Debian users;
+
+You need the python2-base package installed, then as root;
+
+apt-get install python2-xml
+
+From Python source (Un*x);
+
+Before compiling Python, have a look at the file Modules/Setup in the
+distrubution directory. At the bottom of the file you'll find some 
+instructions for installing the expat modules, follow them !
+
+For Windows Users;
+
+AFAIK the windows Python Binary (from python.org) comes with expat 
+support included. If you are using windows see the 'notes' section at
+the bottom of this readme.  
+
+Installation
+-------------
+From the untared distrubution directory; As root run;
+
+python setup.py install
+
+Alternatively just copy xmlstream.py and jabber.py to somewhere in your
+PYTHONPATH. 
+
+The examples directory contains some simple jabber based programs which 
+use the library. See examples/README
+
+Documentaion
+-------------
+The modules contain embedded docmentation, use pydoc to present this is 
+a nice readable format. 
+
+Also see the protocol documentation on jabber.org and the source code for
+the scripts in examples/* . 
+
+
+Notes
+-----
+<> The library should run fine on windows. Unfortunatly the test 
+   client will not as it 'selects' on a file handle and 
+   windows does not support this. If anyone knows a workaround
+   for this please then inform me.
+
+<> Mailing list.  No mailing list is currently available, but as the 
+   project continues this will happen.
+
+<> Name.  I like Red Vs Blue (http://redvsblue.com) and I've lived in a CHU.

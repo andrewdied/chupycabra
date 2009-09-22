@@ -77,19 +77,25 @@ debug = xmlstream.debug
 
 VERSION = xmlstream.VERSION
 
-# Bug 432064: use real True and False
+#FIXME  Bug 432064: use real True and False
 False = 0
 True  = 1
 
 timeout = 300
 
 DBG_INIT, DBG_ALWAYS = debug.DBG_INIT, debug.DBG_ALWAYS
-DBG_DISPATCH = 'jb-dispatch'            ; debug.debug_flags.append(DBG_DISPATCH)
-DBG_NODE = 'jb-node'                    ; debug.debug_flags.append(DBG_NODE)
-DBG_NODE_IQ = 'jb-node-iq'              ; debug.debug_flags.append(DBG_NODE_IQ)
-DBG_NODE_MESSAGE = 'jb-node-message'    ; debug.debug_flags.append(DBG_NODE_MESSAGE)
-DBG_NODE_PRESENCE = 'jb-node-pressence' ; debug.debug_flags.append(DBG_NODE_PRESENCE)
-DBG_NODE_UNKNOWN = 'jb-node-unknown'    ; debug.debug_flags.append(DBG_NODE_UNKNOWN)
+DBG_DISPATCH = 'jb-dispatch'
+DBG_NODE = 'jb-node'
+DBG_NODE_IQ = 'jb-node-iq'
+DBG_NODE_MESSAGE = 'jb-node-message'
+DBG_NODE_PRESENCE = 'jb-node-pressence'
+DBG_NODE_UNKNOWN = 'jb-node-unknown'
+debug.debug_flags.append(DBG_DISPATCH)
+debug.debug_flags.append(DBG_NODE)
+debug.debug_flags.append(DBG_NODE_IQ)
+debug.debug_flags.append(DBG_NODE_MESSAGE)
+debug.debug_flags.append(DBG_NODE_PRESENCE)
+debug.debug_flags.append(DBG_NODE_UNKNOWN)
 
 
 #
@@ -169,16 +175,16 @@ NS_P_COMMANDS   = _NS_PROTOCOL + "/commands" # JEP-0050
 
 ## Possible constants for Roster class .... hmmm ##
 # ARD: I don't like constants.  Look at later.
-RS_SUB_BOTH    = 0
-RS_SUB_FROM    = 1
-RS_SUB_TO      = 2
+RS_SUB_BOTH = 0
+RS_SUB_FROM = 1
+RS_SUB_TO = 2
 
-RS_ASK_SUBSCRIBE   = 1
+RS_ASK_SUBSCRIBE = 1
 RS_ASK_UNSUBSCRIBE = 0
 
-RS_EXT_ONLINE   = 2
-RS_EXT_OFFLINE  = 1
-RS_EXT_PENDING  = 0
+RS_EXT_ONLINE = 2
+RS_EXT_OFFLINE = 1
+RS_EXT_PENDING = 0
 
 #############################################################################
 
@@ -199,7 +205,8 @@ def ustr(what):
 xmlstream.ustr = ustr
 
 class NodeProcessed(Exception): 
-    pass   # currently only for Connection._expectedIqHandler
+    """Currently only for Connection._expectedIqHandler"""
+    pass   
 
 class Connection(xmlstream.Client):
     """Forms the base for both Client and Component Classes"""
@@ -211,7 +218,7 @@ class Connection(xmlstream.Client):
                                   debug=debug, log=log,
                                   connection=connection,
                                   hostIP=hostIP, proxy=proxy)
-        self.handlers={}
+        self.handlers = {}
         self.registerProtocol('unknown', Protocol)
         self.registerProtocol('iq', Iq)
         self.registerProtocol('message', Message)
@@ -249,7 +256,8 @@ class Connection(xmlstream.Client):
         str = u"<?xml version='1.0' encoding='UTF-8' ?>   \
             <stream:stream to='%s' xmlns='%s'" % (self._host, self._namespace)
 
-        if self._outgoingID: str = str + " id='%s' " % self._outgoingID
+        if self._outgoingID: 
+            str = str + " id='%s' " % self._outgoingID
         str = str + " xmlns:stream='http://etherx.jabber.org/streams'>"
         self.send(str)
         self.process(timeout)
@@ -268,68 +276,73 @@ class Connection(xmlstream.Client):
         """Called internally when a 'protocol element' is received.
            Builds the relevant jabber.py object and dispatches it
            to a relevant function or callback."""
-        name=stanza.getName()
+        name = stanza.getName()
         if not self.handlers.has_key(name):
-            self.DEBUG("whats a tag -> " + name,DBG_NODE_UNKNOWN)
-            name='unknown'
+            self.DEBUG("whats a tag -> " + name, DBG_NODE_UNKNOWN)
+            name = 'unknown'
         else:
             self.DEBUG("Got %s stanza"%name, DBG_NODE)
 
-        stanza=self.handlers[name][type](node=stanza)
+        stanza = self.handlers[name][type](node=stanza)
 
-        typ=stanza.getType()
+        typ = stanza.getType()
         if not typ: 
-            typ=''
+            typ = ''
         try:
-            ns=stanza.getQuery()
+            ns = stanza.getQuery()
             if not ns:
-                ns=''
+                ns = ''
         except:
-            ns=''
-        self.DEBUG("dispatch called for: name->%s ns->%s"%(name, ns), DBG_DISPATCH)
+            ns = ''
+        self.DEBUG("dispatch called for: name->%s ns->%s"%(name, ns), 
+                    DBG_DISPATCH)
 
         if typ and ns:
-            typns=typ+ns
+            typns = typ + ns
         else:
-            typns=''
+            typns = ''
         if not self.handlers[name].has_key(ns):
-            ns=''
+            ns = ''
         if not self.handlers[name].has_key(typ):
-            typ=''
+            typ = ''
         if not self.handlers[name].has_key(typns):
-            typns=''
+            typns = ''
 
-        chain=[]
-        for key in ['default', typ, ns, typns]: # we will use all handlers: from very common to very particular
+        chain = []
+        for key in ['default', typ, ns, typns]: 
+            # we will use all handlers: from very common to very particular
             if key:
                 chain += self.handlers[name][key]
 
-        output=''
-        user=True
+        output = ''
+        user = True
         for handler in chain:
             try:
                 if user or handler['system']:
                     if handler['chain']:
-                        output=handler['func'](self, stanza, output)
+                        output = handler['func'](self, stanza, output)
                     else:
                         handler['func'](self, stanza)
             except NodeProcessed:
-                user=False
+                user = False
 
     def registerProtocol(self, tag_name, Proto):
         """Registers a protocol in protocol processing chain. You MUST register
            a protocol before you register any handler function for it.
            First parameter, that passed to this function is the tag name that
-           belongs to all protocol elements. F.e.: message, presence, iq, xdb, ...
-           Second parameter is the [ancestor of] Protocol class, which instance will
+           belongs to all protocol elements. F.e.: message, presence, iq, 
+           xdb, ...
+           Second parameter is the [ancestor of] Protocol class, which 
+           instance will
            built from the received node with call
 
                 if received_packet.getName()==tag_name:
                     stanza = Proto(node = received_packet)
         """
-        self.handlers[tag_name]={type:Proto, 'default':[]}
+        self.handlers[tag_name] = {type:Proto, 'default':[]}
 
-    def registerHandler(self, name, handler, type='', ns='', chained=False, makefirst=False, system=False):
+    def registerHandler(self, name, handler, type='', ns='', chained=False, 
+                        makefirst=False, system=False):
         """Sets the callback func for processing incoming stanzas.
            Multiple callback functions can be set which are called in
            succession. Callback can optionally raise an NodeProcessed error to
@@ -364,9 +377,9 @@ class Connection(xmlstream.Client):
            namespace always have lower priority than common handlers.
         """
         if not type and not ns:
-            type='default'
+            type = 'default'
         if not self.handlers[name].has_key(type+ns):
-            self.handlers[name][type+ns]=[]
+            self.handlers[name][type+ns] = []
         if makefirst:
             self.handlers[name][type+ns].insert({'chain':chained, 
                 'func':handler, 'system':system})
@@ -402,7 +415,8 @@ class Connection(xmlstream.Client):
 
         abort_time = time.time() + timeout
         if timeout:
-            self.DEBUG("waiting with timeout:%s for %s" % (timeout, ustr(ID)),DBG_NODE_IQ)
+            self.DEBUG("waiting with timeout:%s for %s" % (timeout, ustr(ID)),
+                        DBG_NODE_IQ)
         else:
             self.DEBUG("waiting for %s" % ustr(ID), DBG_NODE_IQ)
 
@@ -435,7 +449,7 @@ class Connection(xmlstream.Client):
                 obj.setID(ID)
         ID = ustr(ID)
         self.send(obj)
-        return self.waitForResponse(ID,timeout)
+        return self.waitForResponse(ID, timeout)
 
     def getAnID(self):
         """Returns a unique ID"""
@@ -452,14 +466,14 @@ class Client(Connection):
         Connection.__init__(self, host, port, NS_CLIENT, debug, log,
                             connection=connection, hostIP=hostIP, proxy=proxy)
 
-        self.registerHandler('iq', self._IqRosterManage,'result', 
-                            NS_ROSTER,system=True)
-        self.registerHandler('iq', self._IqRosterManage,'set', 
-                            NS_ROSTER,system=True)
-        self.registerHandler('iq', self._IqRegisterResult,'result', 
-                            NS_REGISTER,system=True)
-        self.registerHandler('iq', self._IqAgentsResult,'result', 
-                            NS_AGENTS,system=True)
+        self.registerHandler('iq', self._IqRosterManage, 'result', 
+                            NS_ROSTER, system=True)
+        self.registerHandler('iq', self._IqRosterManage, 'set', 
+                            NS_ROSTER, system=True)
+        self.registerHandler('iq', self._IqRegisterResult, 'result', 
+                            NS_REGISTER, system=True)
+        self.registerHandler('iq', self._IqAgentsResult, 'result', 
+                            NS_AGENTS, system=True)
         self.registerHandler('presence', self._presenceHandler, system=True)
 
         self._roster = Roster()
@@ -482,7 +496,7 @@ class Client(Connection):
             presence.setX(NS_XSIGNED).insertData(signedStatus)
         self.send(presence)
 
-    sendInitPresence=sendPresence
+    sendInitPresence = sendPresence
 
     def _presenceHandler(self, conn, pres_obj):
         who = ustr(pres_obj.getFrom())
@@ -533,7 +547,8 @@ class Client(Connection):
             if agent.getName() == 'agent': ## hmmm
                 self._agents[agent.getAttr('jid')] = {}
                 for info in agent.getChildren():
-                    self._agents[agent.getAttr('jid')][info.getName()] = info.getData()
+                    self._agents[agent.getAttr('jid')][info.getName()] = \
+                        info.getData()
 
     def auth(self, username, passwd, resource):
         """Authenticates and logs in to the specified jabber server
@@ -590,7 +605,7 @@ class Client(Connection):
 
         iq_result = self.SendAndWaitForResponse(auth_set_iq)
 
-        if iq_result==None:
+        if iq_result is None:
             return False
         if iq_result.getError() is None:
             return True
@@ -672,7 +687,6 @@ class Client(Connection):
         self.DEBUG(ustr(reg_iq), DBG_NODE_IQ)
         return self.SendAndWaitForResponse(reg_iq)
 
-
     def getRegInfo(self):
         """Returns a dictionary of fields requested by the server for a
            registration attempt.  Each dictionary entry maps from the name of
@@ -680,12 +694,10 @@ class Client(Connection):
            server or set programmatically by calling self.setRegInfo(). """
         return self._reg_info
 
-
-    def setRegInfo(self,key,val):
+    def setRegInfo(self, key, val):
         """Sets a name/value attribute. Note: requestRegInfo must be
            called before setting."""
         self._reg_info[key] = val
-
 
     def sendRegInfo(self, agent=''):
         """Sends the populated registration dictionary back to the server"""
@@ -698,7 +710,6 @@ class Client(Connection):
             q.insertTag(info).putData(self._reg_info[info])
         return self.SendAndWaitForResponse(reg_iq)
 
-
     def deregister(self, agent=''):
         """ Send off a request to deregister with the server or with the given
             agent.  Returns True if successful, else False.
@@ -708,7 +719,8 @@ class Client(Connection):
         if agent:
             if agent.find('.') == -1:
                 agent += '.' + self._host
-            self.send(Presence(to=agent, type='unsubscribed'))       # This is enough f.e. for icqv7t or jit
+            self.send(Presence(to=agent, type='unsubscribed'))       
+                # This is enough f.e. for icqv7t or jit
         else: agent = self._host
         q = self.requestRegInfo()
         kids = q.getQueryPayload()
@@ -747,36 +759,45 @@ class Client(Connection):
         return self._agents
 
     def _discover(self, ns, jid, node=None):
-        iq=Iq(to=jid,type='get', query=ns)
-        if node: iq.putAttr('node', node)
-        rep=self.SendAndWaitForResponse(iq)
-        if rep: ret=rep.getQueryPayload()
-        else: ret=[]
-        if not ret: ret=[]
+        iq = Iq(to=jid, type='get', query=ns)
+        if node: 
+            iq.putAttr('node', node)
+        rep = self.SendAndWaitForResponse(iq)
+        if rep: 
+            ret = rep.getQueryPayload()
+        else: 
+            ret = []
+        if not ret: 
+            ret = []
         return ret
 
     def discoverItems(self, jid, node=None):
-        """ According to JEP-0030: jid is mandatory, name, node, action is optional. """
-        ret=[]
-        disco = self._discover(NS_P_DISC_ITEMS,jid,node)
+        """ According to JEP-0030: jid is mandatory, name, node, action is 
+        optional. 
+        """
+        ret = []
+        disco = self._discover(NS_P_DISC_ITEMS, jid, node)
         for i in disco:
             ret.append(i.attrs)
         return ret
 
-    def discoverInfo(self,jid,node=None):
+    def discoverInfo(self, jid, node=None):
         """ According to JEP-0030:
             For identity: category, name is mandatory, type is optional.
-            For feature: var is mandatory"""
-        identities , features = [] , []
-        disco = self._discover(NS_P_DISC_INFO,jid,node)
+            For feature: var is mandatory
+        """
+        identities, features = [], []
+        disco = self._discover(NS_P_DISC_INFO, jid, node)
         for i in disco:
-            if i.getName()=='identity': identities.append(i.attrs)
-            elif i.getName()=='feature': features.append(i.getAttr('var'))
+            if i.getName()=='identity': 
+                identities.append(i.attrs)
+            elif i.getName()=='feature': 
+                features.append(i.getAttr('var'))
         return identities, features
 
     def browseAgents(self, jid, node=None):
         identities, features, items = [], [], []
-        iq = Iq(to=jid,type='get', query=NS_BROWSE)
+        iq = Iq(to=jid, type='get', query=NS_BROWSE)
         rep = self.SendAndWaitForResponse(iq)
         if not rep:
             return identities, features, items
@@ -801,9 +822,10 @@ class Client(Connection):
 class Protocol(xmlstream.Node):
     """Base class for jabber 'protocol elements' - messages, presences and iqs.
        Implements methods that are common to all these"""
-    def __init__(self, name=None, to=None, type=None, attrs=None, frm=None, payload=[], node=None):
+    def __init__(self, name=None, to=None, type=None, attrs=None, frm=None, 
+                payload=[], node=None):
         if not attrs:
-            attrs={}
+            attrs = {}
         if to:
             attrs['to'] = to
         if frm:
@@ -811,37 +833,39 @@ class Protocol(xmlstream.Node):
         if type:
             attrs['type'] = type
         self._node = self
-        xmlstream.Node.__init__(self, tag=name, attrs=attrs, payload=payload, node=node)
+        xmlstream.Node.__init__(self, tag=name, attrs=attrs, payload=payload, 
+                                node=node)
 
     def asNode(self):
         """Back compatibility method"""
-        print 'WARNING! "asNode()" method is obsolete, use Protocol object as Node object instead.'
+        print 'WARNING! "asNode()" method is obsolete, use Protocol object \
+            as Node object instead.'
         return self
 
     def getError(self):
         """Returns the error string, if any"""
-        try: return self.getTag('error').getData()
-        except: return None
-
+        try: 
+            return self.getTag('error').getData()
+        except: 
+            return None
 
     def getErrorCode(self):
         """Returns the error code, if any"""
-        try: return self.getTag('error').getAttr('code')
-        except: return None
+        try: 
+            return self.getTag('error').getAttr('code')
+        except: 
+            return None
 
-
-    def setError(self,val,code):
+    def setError(self, val, code):
         """Sets an error string and code"""
         err = self.getTag('error')
         if not err:
             err = self.insertTag('error')
         err.putData(val)
-        err.putAttr('code',str(code))
-
+        err.putAttr('code', str(code))
 
     def __repr__(self):
         return self.__str__()
-
 
     def getTo(self):
         """Returns the 'to' attribute as a JID object."""
@@ -850,14 +874,12 @@ class Protocol(xmlstream.Node):
         except:
             return None
 
-
     def getFrom(self):
         """Returns the 'from' attribute as a JID object."""
         try:
             return JID(self.getAttr('from'))
         except:
             return None
-
 
     def getType(self):
         """Returns the 'type' attribute of the protocol element."""
@@ -866,7 +888,6 @@ class Protocol(xmlstream.Node):
         except:
             return None
 
-
     def getID(self):
         """Returns the 'id' attribute of the protocol element."""
         try:
@@ -874,21 +895,17 @@ class Protocol(xmlstream.Node):
         except:
             return None
 
-
     def setTo(self, val):
         """Sets the 'to' element to the given JID."""
         self.putAttr('to', ustr(val))
-
 
     def setFrom(self, val):
         """Sets the 'from' element to the given JID."""
         self.putAttr('from', ustr(val))
 
-
     def setType(self, val):
         """Sets the 'type' attribute of the protocol element"""
         self.putAttr('type', val)
-
 
     def setID(self, val):
         """Sets the ID of the protocol element"""
@@ -903,15 +920,14 @@ class Protocol(xmlstream.Node):
         except:
             return None
 
-
-    def setX(self,namespace,index=0):
+    def setX(self, namespace, index=0):
         """Sets the name space of the x tag. It also creates the node
            if it doesn't already exist."""
-        x = self.getTag('x',index)
-        if not x: x = self.insertTag('x')
+        x = self.getTag('x', index)
+        if not x: 
+            x = self.insertTag('x')
         x.setNamespace(namespace)
         return x
-
 
     def setXPayload(self, payload, namespace=''):
         """Sets the Child of an 'x' tag. Can be a Node instance or an
@@ -924,14 +940,14 @@ class Protocol(xmlstream.Node):
         x.kids = [] # should be a method for this realy
         x.insertNode(payload)
 
-
     def getXPayload(self, val=None):
         """Returns the x tags' payload as a list of Node instances."""
         nodes = []
         if val is not None:
             if type(val) == type(""):
                 for xnode in self.getTags('x'):
-                    if xnode.getNamespace() == val: nodes.append(xnode.kids[0])
+                    if xnode.getNamespace() == val: 
+                        nodes.append(xnode.kids[0])
                 return nodes
             else:
                 try: 
@@ -942,7 +958,6 @@ class Protocol(xmlstream.Node):
         for xnode in self.getTags('x'):
             nodes.append(xnode.kids[0])
         return nodes
-
 
     def getXNode(self, val=None):
         """Returns the x Node instance. If there are multiple tags
@@ -988,15 +1003,17 @@ class Protocol(xmlstream.Node):
 class Message(Protocol):
     """Builds on the Protocol class to provide an interface for sending
        message protocol elements"""
-    def __init__(self, to=None, body=None, type=None, subject=None, attrs=None, frm=None, payload=[], node=None):
-        Protocol.__init__(self, 'message', to=to, type=type, attrs=attrs, frm=frm, payload=payload, node=node)
+    def __init__(self, to=None, body=None, type=None, subject=None, 
+                attrs=None, frm=None, payload=[], node=None):
+        Protocol.__init__(self, 'message', to=to, type=type, attrs=attrs, 
+                            frm=frm, payload=payload, node=node)
         if body: 
             self.setBody(body)
         if subject: 
             self.setSubject(subject)
         # examine x tag and set timestamp if pressent
         try: 
-            self.setTimestamp( self.getTag('x').getAttr('stamp') )
+            self.setTimestamp(self.getTag('x').getAttr('stamp'))
         except: 
             self.setTimestamp()
 
@@ -1007,14 +1024,12 @@ class Message(Protocol):
         except: 
             return None
 
-
     def getSubject(self):
         """Returns the message's subject."""
         try: 
             return self.getTag('subject').getData()
         except: 
             return None
-
 
     def getThread(self):
         """Returns the message's thread ID."""
@@ -1023,12 +1038,10 @@ class Message(Protocol):
         except: 
             return None
 
-
     def getTimestamp(self):
         return self.time_stamp
 
-
-    def setBody(self,val):
+    def setBody(self, val):
         """Sets the message body text."""
         body = self.getTag('body')
         if body:
@@ -1082,8 +1095,10 @@ class Message(Protocol):
 class Presence(Protocol):
     """Class for creating and managing jabber <presence> protocol
        elements"""
-    def __init__(self, to=None, type=None, priority=None, show=None, status=None, attrs=None, frm=None, payload=[], node=None):
-        Protocol.__init__(self, 'presence', to=to, type=type, attrs=attrs, frm=frm, payload=payload, node=node)
+    def __init__(self, to=None, type=None, priority=None, show=None, 
+                status=None, attrs=None, frm=None, payload=[], node=None):
+        Protocol.__init__(self, 'presence', to=to, type=type, attrs=attrs, 
+                            frm=frm, payload=payload, node=node)
         if priority: 
             self.setPriority(priority)
         if show: 
@@ -1121,7 +1136,7 @@ class Presence(Protocol):
         for xtag in self.getTags('x'):
             for child in xtag.getTags('item'):
                 for cchild in child.getTags(tag):
-                    return cchild.getData(),cchild.getAttr(attr)
+                    return cchild.getData(), cchild.getAttr(attr)
         return None, None
 
     def getRole(self):
@@ -1177,8 +1192,10 @@ class Presence(Protocol):
 class Iq(Protocol):
     """Class for creating and managing jabber <iq> protocol
        elements"""
-    def __init__(self, to=None, type=None, query=None, attrs=None, frm=None, payload=[], node=None):
-        Protocol.__init__(self, 'iq', to=to, type=type, attrs=attrs, frm=frm, payload=payload, node=node)
+    def __init__(self, to=None, type=None, query=None, attrs=None, 
+                frm=None, payload=[], node=None):
+        Protocol.__init__(self, 'iq', to=to, type=type, attrs=attrs, 
+                        frm=frm, payload=payload, node=node)
         if query: 
             self.setQuery(query)
 
@@ -1216,7 +1233,6 @@ class Iq(Protocol):
            is returned as the function result."""
         return self._setTag('query', namespace)
 
-
     def setQueryPayload(self, payload, add=False):
         """Sets a Iq's query payload.  'payload' can be either a Node
            structure or a valid xml document. The query tag is automatically
@@ -1229,9 +1245,9 @@ class Iq(Protocol):
         if type(payload) == type('') or type(payload) == type(u''):
             payload = xmlstream.NodeBuilder(payload).getDom()
 
-        if not add: q.kids = []
+        if not add: 
+            q.kids = []
         q.insertNode(payload)
-
 
     def getQueryPayload(self):
         """Returns the query's payload as a Node list"""
@@ -1372,7 +1388,7 @@ class Roster:
     def getJIDs(self):
         """Returns a list of JIDs stored within the roster.  Each entry in the
            list is a JID object."""
-        to_ret = [];
+        to_ret = []
         for jid in self._data.keys():
             to_ret.append(JID(jid))
         return to_ret
@@ -1381,7 +1397,7 @@ class Roster:
         """Returns the internal data representation of the roster."""
         return self._data
 
-    def isOnline(self,jid):
+    def isOnline(self, jid):
         """Returns True if the given jid is online, False if not."""
         jid = ustr(jid)
         if self.getOnline(jid) != 'online':
@@ -1401,7 +1417,7 @@ class Roster:
             self._data[jid]['groups'] = groups
             self._data[jid]['ask'] = ask
             self._data[jid]['sub'] = sub
-            if self._listener != None:
+            if self._listener is not None:
                 self._listener("update", jid, {'name' : name,
                                                'groups' : groups,
                                                'sub' : sub, 'ask' : ask})
@@ -1409,12 +1425,12 @@ class Roster:
             self._data[jid] = {'name': name, 'groups' : groups, 'ask': ask,
                                 'sub': sub, 'online': online, 'status': None,
                                 'show': None}
-            if self._listener != None:
+            if self._listener is not None:
                 self._listener("add", jid, {'name' : name, 'groups' : groups,
                                             'sub' : sub, 'ask' : ask,
                                             'online' : online})
 
-    def _setOnline(self, jid,val):
+    def _setOnline(self, jid, val):
         """Used internally - private"""
         jid = ustr(jid)
         if self._data.has_key(jid):
@@ -1528,8 +1544,10 @@ class JID:
 
     def getStripped(self):
         """Returns a JID string with no resource"""
-        if self.node: return self.node + '@' + self.domain
-        else: return self.domain
+        if self.node: 
+            return self.node + '@' + self.domain
+        else: 
+            return self.domain
 
     def __eq__(self, other):
         """Returns whether this JID is identical to another one.
@@ -1576,17 +1594,21 @@ class Component(Connection):
 ## component protocol elements
 
 class XDB(Protocol):
-    def __init__(self, attrs=None, type=None, frm=None, to=None, payload=[], node=None):
-        Protocol.__init__(self, 'xdb', attrs=attrs, type=type, frm=frm, to=to, payload=payload, node=node)
+    def __init__(self, attrs=None, type=None, frm=None, to=None, payload=[], 
+                node=None):
+        Protocol.__init__(self, 'xdb', attrs=attrs, type=type, frm=frm, 
+                    to=to, payload=payload, node=node)
 
 #############################################################################
 
 class Log(Protocol):
     ## eg: <log type='warn' from='component'>Hello Log File</log>
-    def __init__(self, attrs=None, type=None, frm=None, to=None, payload=[], node=None):
-        Protocol.__init__(self, 'log', attrs=attrs, type=type, frm=frm, to=to, payload=payload, node=node)
+    def __init__(self, attrs=None, type=None, frm=None, to=None, payload=[], 
+                node=None):
+        Protocol.__init__(self, 'log', attrs=attrs, type=type, frm=frm, 
+                            to=to, payload=payload, node=node)
 
-    def setBody(self,val):
+    def setBody(self, val):
         "Sets the log message text."
         self.getTag('log').putData(val)
 

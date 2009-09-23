@@ -1,0 +1,5 @@
+Many tests need to be put here.  My original thought is to use unittest,
+since it's "batteries included" in python, and I'm sure people use it
+successfully.  Also, one of the end goals of chupycabra is for regular
+users (IT and QA people, say), to be able to understand it and use it
+quickly, tests are a good starting point for users.

@@ -44,9 +44,10 @@ import xml.parsers.expat
 import debug
 _debug=debug
 
+# FIXME use internal versions
 VERSION = "0.5"
 
-# Bug 432064: use real True and False
+# FIXME Bug 432064: use real True and False
 False = 0
 True  = 1
 
@@ -91,9 +92,11 @@ class Node:
     """A simple XML DOM like class"""
     def __init__(self, tag=None, parent=None, attrs={}, payload=[], node=None):
         if node:
-            if type(node)<>type(self): node=NodeBuilder(node).getDom()
-            self.name,self.namespace,self.attrs,self.data,self.kids,self.parent = \
-                node.name,node.namespace,node.attrs,node.data,node.kids,node.parent
+            if type(node) != type(self): 
+                node=NodeBuilder(node).getDom()
+            self.name, self.namespace, self.attrs, self.data, self.kids, \
+            self.parent = node.name, node.namespace, node.attrs, node.data, \
+            node.kids,node.parent
         else:
             self.name,self.namespace,self.attrs,self.data,self.kids,self.parent = 'tag','',{},[],[],None
 
@@ -212,8 +215,10 @@ class Node:
         if not found."""
         for node in self.kids:
             if node.getName() == name:
-                if not index: return node
-                if index is not None: index-=1
+                if not index: 
+                    return node
+                if index is not None: 
+                    index -= 1
         return None
 
     def getTags(self, name):
@@ -234,7 +239,8 @@ class Node:
             try:
                 self.kids.remove(tag)
                 return tag
-            except: return None
+            except: 
+                return None
         for node in self.kids:
             if node.getName()==tag:
                 self.kids.remove(node)
@@ -514,7 +520,7 @@ class Client(Stream):
             self._read , self._write = bak
             try: proto,code,desc=reply.split('\n')[0].split(' ',2)
             except: raise error('Invalid proxy reply')
-            if code<>'200': raise error('Invalid proxy reply: %s %s %s'%(proto,code,desc))
+            if code != '200': raise error('Invalid proxy reply: %s %s %s'%(proto,code,desc))
             while reply.find('\n\n') == -1: reply += self.read().replace('\r','')
 
         self.DEBUG("Jabber server connected",DBG_INIT)

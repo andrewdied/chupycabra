@@ -69,7 +69,7 @@ An example of usage for a simple client is:
 <> Respond to incoming elements passed to your callback functions.
 """
 
-import sha
+import hashlib
 import time
 import xmlstream
 
@@ -586,9 +586,9 @@ class Client(Connection):
             seq = auth_ret_query.getTag('sequence').getData()
             self.DEBUG("zero-k authentication supported", (DBG_INIT, 
                                                         DBG_NODE_IQ))
-            hash = sha.new(sha.new(passwd).hexdigest()+token).hexdigest()
+            hash = hashlib.sha1(hashlib.sha1(passwd).hexdigest()+token).hexdigest()
             for item in xrange(int(seq)):
-                hash = sha.new(hash).hexdigest()
+                hash = hashlib.sha1(hash).hexdigest()
             q.insertTag('hash').insertData(hash)
 
         elif auth_ret_query.getTag('digest'):
@@ -596,7 +596,7 @@ class Client(Connection):
             self.DEBUG("digest authentication supported", (DBG_INIT,
                                                         DBG_NODE_IQ))
             digest = q.insertTag('digest')
-            digest.insertData(sha.new(
+            digest.insertData(hashlib.sha1(
                 self.getIncomingID() + passwd).hexdigest())
         else:
             self.DEBUG("plain text authentication supported", (DBG_INIT, 
@@ -1576,7 +1576,7 @@ class Component(Connection):
     def auth(self, secret):
         """will disconnect on failure"""
         self.send(u"<handshake id='1'>%s</handshake>"
-                   % sha.new(self.getIncomingID() + secret).hexdigest())
+                   % hashlib.sha1(self.getIncomingID() + secret).hexdigest())
         while not self._auth_OK:
             self.DEBUG("waiting on handshake")
             self.process(1)

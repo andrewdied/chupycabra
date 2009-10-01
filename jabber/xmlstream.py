@@ -43,8 +43,7 @@ import xml.parsers.expat
 import debug
 _debug = debug
 
-# FIXME use internal versions
-VERSION = "0.5"
+__version__ = "0.1"
 
 # FIXME Bug 432064: use real True and False
 False = 0
@@ -539,7 +538,7 @@ class Client(Stream):
             connector.append('Proxy-Connection: Keep-Alive')
             connector.append('Pragma: no-cache')
             connector.append('Host: %s:%s' % (self._hostIP, self._port))
-            connector.append('User-Agent: Chupycabra/'+VERSION)
+            connector.append('User-Agent: Chupycabra/'+__version__)
             if self._proxy.has_key('user') and self._proxy.has_key('password'):
                 credentials = '%s:%s' % (self._proxy['user'], 
                     self._proxy['password'])

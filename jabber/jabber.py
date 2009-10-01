@@ -75,7 +75,7 @@ import xmlstream
 
 debug = xmlstream.debug
 
-VERSION = xmlstream.VERSION
+__version__ = xmlstream.__version__
 
 #FIXME  Bug 432064: use real True and False
 False = 0

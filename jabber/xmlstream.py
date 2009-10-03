@@ -94,7 +94,7 @@ class Node:
     """A simple XML DOM like class"""
     def __init__(self, tag=None, parent=None, attrs={}, payload=[], node=None):
         if node:
-            if type(node) != type(self): 
+            if not isinstance(node, self):
                 node = NodeBuilder(node).getDom()
             self.name, self.namespace, self.attrs, self.data, self.kids, \
             self.parent = node.name, node.namespace, node.attrs, node.data, \
@@ -113,7 +113,7 @@ class Node:
             self.attrs[attr] = attrs[attr]
 
         for i in payload:
-            if type(i) == type(self): 
+            if isinstance(i, self):
                 self.insertNode(i)
             else: 
                 self.insertXML(i)
@@ -247,7 +247,7 @@ class Node:
 
     def removeTag(self, tag):
         """Pops out specified child and returns it."""
-        if type(tag) == type(self):
+        if isinstance(tag, self):
             try:
                 self.kids.remove(tag)
                 return tag
@@ -345,7 +345,7 @@ class Stream(NodeBuilder):
         self.DEBUG("stream init called", DBG_INIT)
 
         if log:
-            if type(log) is type(""):
+            if isinstance(log, str):
                 try:
                     self._logFH = open(log,'w')
                 except:
@@ -394,8 +394,9 @@ class Stream(NodeBuilder):
            If supplied data is not unicode string, ENCODING
            is used for convertion. Avoid this!
            Always send your data as a unicode string."""
-        if type(raw_data) == type(''):
-            self.DEBUG('Non-utf-8 string "%s" passed to Stream.write! Treating it as %s encoded.' % (raw_data, ENCODING))
+        if isinstance(raw_data, str):
+            self.DEBUG('Non-utf-8 string "%s" passed to Stream.write! \
+                       Treating it as %s encoded.' % (raw_data, ENCODING))
             raw_data = unicode(raw_data, ENCODING)
         data_out = raw_data.encode('utf-8')
         try:

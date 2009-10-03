@@ -191,7 +191,7 @@ RS_EXT_PENDING = 0
 def ustr(what):
     """If sending object is already a unicode str, just
        return it, otherwise convert it using xmlstream.ENCODING"""
-    if type(what) == type(u''):
+    if isinstance(what, unicode):
         r = what
     else:
         try: 
@@ -199,7 +199,7 @@ def ustr(what):
         except AttributeError: 
             r = str(what)
         # make sure __str__() didnt return a unicode
-        if type(r) != type(u''):
+        if not isinstance(r, unicode):
             r = unicode(r, xmlstream.ENCODING, 'replace')
     return r
 xmlstream.ustr = ustr
@@ -586,9 +586,10 @@ class Client(Connection):
             seq = auth_ret_query.getTag('sequence').getData()
             self.DEBUG("zero-k authentication supported", (DBG_INIT, 
                                                         DBG_NODE_IQ))
-            hash = hashlib.sha1(hashlib.sha1(passwd).hexdigest()+token).hexdigest()
+            hash_ = hashlib.sha1(hashlib.sha1(passwd).hexdigest() + 
+                                 token).hexdigest()
             for item in xrange(int(seq)):
-                hash = hashlib.sha1(hash).hexdigest()
+                hash_ = hashlib.sha1(hash_).hexdigest()
             q.insertTag('hash').insertData(hash)
 
         elif auth_ret_query.getTag('digest'):
@@ -934,7 +935,7 @@ class Protocol(xmlstream.Node):
            XML document"""
         x = self.setX(namespace)
 
-        if type(payload) == type('') or type(payload) == type(u''):
+        if isinstance(payload, str) or isinstance(payload, unicode):
             payload = xmlstream.NodeBuilder(payload).getDom()
 
         x.kids = [] # should be a method for this realy
@@ -944,7 +945,7 @@ class Protocol(xmlstream.Node):
         """Returns the x tags' payload as a list of Node instances."""
         nodes = []
         if val is not None:
-            if type(val) == type(""):
+            if isinstance(val, str):
                 for xnode in self.getTags('x'):
                     if xnode.getNamespace() == val: 
                         nodes.append(xnode.kids[0])
@@ -966,7 +967,7 @@ class Protocol(xmlstream.Node):
            and if a match is found it will be returned."""
         if val is not None:
             nodes = []
-            if type(val) == type(""):
+            if isinstance(val, str):
                 for xnode in self.getTags('x'):
                     if xnode.getNamespace() == val: nodes.append(xnode)
                 return nodes
@@ -1242,7 +1243,7 @@ class Iq(Protocol):
         if q is None:
             q = self.insertTag('query')
 
-        if type(payload) == type('') or type(payload) == type(u''):
+        if isinstance(payload, str) or isinstance(payload, unicode):
             payload = xmlstream.NodeBuilder(payload).getDom()
 
         if not add: 
@@ -1485,7 +1486,7 @@ class Roster:
 class JID:
     """A Simple class for managing jabber users id's """
     def __init__(self, jid='', node='', domain='', resource=''):
-        if type(jid)==type(self):
+        if isinstance(jid, self):
             self.node = jid.node
             self.domain = jid.domain
             self.resource = jid.resource
@@ -1518,6 +1519,7 @@ class JID:
 
     __repr__ = __str__
 
+    #FIXME: None of these work as advertised in the docstring.  ARD 1OCT09
     def getNode(self):
         """Returns JID Node as string"""
         return self.node

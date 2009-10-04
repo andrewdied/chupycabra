@@ -419,7 +419,8 @@ class Stream(NodeBuilder):
     def disconnect(self):
         """Close the stream and socket"""
         self.write(u"</stream:stream>")
-        while self.process(): pass
+        while self.process():
+            pass
         self._sock.close()
         self._sock = None
 
@@ -523,14 +524,14 @@ class Client(Stream):
         if self._proxy:
             self.DEBUG("Proxy connected", DBG_INIT)
             if self._proxy.has_key('type'): 
-                type = self._proxy['type'].upper()
+                type_ = self._proxy['type'].upper()
             else: 
-                type = 'CONNECT'
+                type_ = 'CONNECT'
             connector = []
-            if type == 'CONNECT':
+            if type_ == 'CONNECT':
                 connector.append(u'CONNECT %s:%s HTTP/1.0' % (self._hostIP,
                     self._port))
-            elif type == 'PUT':
+            elif type_ == 'PUT':
                 connector.append(u'PUT http://%s:%s/ HTTP/1.0' % (self._hostIP,
                     self._port))
             else:

@@ -253,13 +253,13 @@ class Connection(xmlstream.Client):
 
     def header(self):
         self.DEBUG("stream: sending initial header", DBG_INIT)
-        str = u"<?xml version='1.0' encoding='UTF-8' ?>   \
+        header = u"<?xml version='1.0' encoding='UTF-8' ?>   \
             <stream:stream to='%s' xmlns='%s'" % (self._host, self._namespace)
 
         if self._outgoingID: 
-            str = str + " id='%s' " % self._outgoingID
-        str = str + " xmlns:stream='http://etherx.jabber.org/streams'>"
-        self.send(str)
+            header = header + " id='%s' " % self._outgoingID
+        header = header + " xmlns:stream='http://etherx.jabber.org/streams'>"
+        self.send(header)
         self.process(timeout)
 
     def send(self, what):
@@ -341,7 +341,7 @@ class Connection(xmlstream.Client):
         """
         self.handlers[tag_name] = {type:Proto, 'default':[]}
 
-    def registerHandler(self, name, handler, type='', ns='', chained=False, 
+    def registerHandler(self, name, handler, type_='', ns='', chained=False, 
                         makefirst=False, system=False):
         """Sets the callback func for processing incoming stanzas.
            Multiple callback functions can be set which are called in
@@ -376,15 +376,15 @@ class Connection(xmlstream.Client):
            type and namespace scope. Note that handlers for particular type or 
            namespace always have lower priority than common handlers.
         """
-        if not type and not ns:
-            type = 'default'
-        if not self.handlers[name].has_key(type+ns):
-            self.handlers[name][type+ns] = []
+        if not type_ and not ns:
+            type_ = 'default'
+        if not self.handlers[name].has_key(type_ + ns):
+            self.handlers[name][type_ + ns] = []
         if makefirst:
-            self.handlers[name][type+ns].insert({'chain':chained, 
+            self.handlers[name][type_ + ns].insert({'chain':chained, 
                 'func':handler, 'system':system})
         else:
-            self.handlers[name][type+ns].append({'chain':chained, 
+            self.handlers[name][type_ + ns].append({'chain':chained, 
                 'func':handler, 'system':system})
 
     def setDisconnectHandler(self, func):
@@ -500,12 +500,12 @@ class Client(Connection):
 
     def _presenceHandler(self, conn, pres_obj):
         who = ustr(pres_obj.getFrom())
-        type = pres_obj.getType()
-        self.DEBUG("presence type is %s" % type, DBG_NODE_PRESENCE)
-        if type == 'available' or not type:
+        type_ = pres_obj.getType()
+        self.DEBUG("presence type is %s" % type_, DBG_NODE_PRESENCE)
+        if type_ == 'available' or not type_:
             self.DEBUG("roster setting %s to online" % who, DBG_NODE_PRESENCE)
             self._roster._setOnline(who, 'online')
-        elif type == 'unavailable':
+        elif type_ == 'unavailable':
             self.DEBUG("roster setting %s to offline" % who, DBG_NODE_PRESENCE)
             self._roster._setOnline(who, 'offline')
         self._roster._setShow(who, pres_obj.getShow())

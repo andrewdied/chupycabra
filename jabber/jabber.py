@@ -1486,7 +1486,8 @@ class Roster:
 class JID:
     """A Simple class for managing jabber users id's """
     def __init__(self, jid='', node='', domain='', resource=''):
-        if isinstance(jid, self):
+        #if isinstance(jid, self):
+        if type(jid) is type(self):
             self.node = jid.node
             self.domain = jid.domain
             self.resource = jid.resource

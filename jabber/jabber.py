@@ -75,7 +75,7 @@ import xmlstream
 
 debug = xmlstream.debug
 
-VERSION = xmlstream.VERSION
+__version__ = xmlstream.__version__
 
 #FIXME  Bug 432064: use real True and False
 False = 0
@@ -191,7 +191,7 @@ RS_EXT_PENDING = 0
 def ustr(what):
     """If sending object is already a unicode str, just
        return it, otherwise convert it using xmlstream.ENCODING"""
-    if type(what) == type(u''):
+    if isinstance(what, unicode):
         r = what
     else:
         try: 
@@ -199,7 +199,7 @@ def ustr(what):
         except AttributeError: 
             r = str(what)
         # make sure __str__() didnt return a unicode
-        if type(r) != type(u''):
+        if not isinstance(r, unicode):
             r = unicode(r, xmlstream.ENCODING, 'replace')
     return r
 xmlstream.ustr = ustr
@@ -253,13 +253,13 @@ class Connection(xmlstream.Client):
 
     def header(self):
         self.DEBUG("stream: sending initial header", DBG_INIT)
-        str = u"<?xml version='1.0' encoding='UTF-8' ?>   \
+        header = u"<?xml version='1.0' encoding='UTF-8' ?>   \
             <stream:stream to='%s' xmlns='%s'" % (self._host, self._namespace)
 
         if self._outgoingID: 
-            str = str + " id='%s' " % self._outgoingID
-        str = str + " xmlns:stream='http://etherx.jabber.org/streams'>"
-        self.send(str)
+            header = header + " id='%s' " % self._outgoingID
+        header = header + " xmlns:stream='http://etherx.jabber.org/streams'>"
+        self.send(header)
         self.process(timeout)
 
     def send(self, what):
@@ -341,7 +341,7 @@ class Connection(xmlstream.Client):
         """
         self.handlers[tag_name] = {type:Proto, 'default':[]}
 
-    def registerHandler(self, name, handler, type='', ns='', chained=False, 
+    def registerHandler(self, name, handler, type_='', ns='', chained=False, 
                         makefirst=False, system=False):
         """Sets the callback func for processing incoming stanzas.
            Multiple callback functions can be set which are called in
@@ -376,15 +376,15 @@ class Connection(xmlstream.Client):
            type and namespace scope. Note that handlers for particular type or 
            namespace always have lower priority than common handlers.
         """
-        if not type and not ns:
-            type = 'default'
-        if not self.handlers[name].has_key(type+ns):
-            self.handlers[name][type+ns] = []
+        if not type_ and not ns:
+            type_ = 'default'
+        if not self.handlers[name].has_key(type_ + ns):
+            self.handlers[name][type_ + ns] = []
         if makefirst:
-            self.handlers[name][type+ns].insert({'chain':chained, 
+            self.handlers[name][type_ + ns].insert({'chain':chained, 
                 'func':handler, 'system':system})
         else:
-            self.handlers[name][type+ns].append({'chain':chained, 
+            self.handlers[name][type_ + ns].append({'chain':chained, 
                 'func':handler, 'system':system})
 
     def setDisconnectHandler(self, func):
@@ -500,12 +500,12 @@ class Client(Connection):
 
     def _presenceHandler(self, conn, pres_obj):
         who = ustr(pres_obj.getFrom())
-        type = pres_obj.getType()
-        self.DEBUG("presence type is %s" % type, DBG_NODE_PRESENCE)
-        if type == 'available' or not type:
+        type_ = pres_obj.getType()
+        self.DEBUG("presence type is %s" % type_, DBG_NODE_PRESENCE)
+        if type_ == 'available' or not type_:
             self.DEBUG("roster setting %s to online" % who, DBG_NODE_PRESENCE)
             self._roster._setOnline(who, 'online')
-        elif type == 'unavailable':
+        elif type_ == 'unavailable':
             self.DEBUG("roster setting %s to offline" % who, DBG_NODE_PRESENCE)
             self._roster._setOnline(who, 'offline')
         self._roster._setShow(who, pres_obj.getShow())
@@ -586,9 +586,10 @@ class Client(Connection):
             seq = auth_ret_query.getTag('sequence').getData()
             self.DEBUG("zero-k authentication supported", (DBG_INIT, 
                                                         DBG_NODE_IQ))
-            hash = hashlib.sha1(hashlib.sha1(passwd).hexdigest()+token).hexdigest()
+            hash_ = hashlib.sha1(hashlib.sha1(passwd).hexdigest() + 
+                                 token).hexdigest()
             for item in xrange(int(seq)):
-                hash = hashlib.sha1(hash).hexdigest()
+                hash_ = hashlib.sha1(hash_).hexdigest()
             q.insertTag('hash').insertData(hash)
 
         elif auth_ret_query.getTag('digest'):
@@ -934,7 +935,7 @@ class Protocol(xmlstream.Node):
            XML document"""
         x = self.setX(namespace)
 
-        if type(payload) == type('') or type(payload) == type(u''):
+        if isinstance(payload, str) or isinstance(payload, unicode):
             payload = xmlstream.NodeBuilder(payload).getDom()
 
         x.kids = [] # should be a method for this realy
@@ -944,7 +945,7 @@ class Protocol(xmlstream.Node):
         """Returns the x tags' payload as a list of Node instances."""
         nodes = []
         if val is not None:
-            if type(val) == type(""):
+            if isinstance(val, str):
                 for xnode in self.getTags('x'):
                     if xnode.getNamespace() == val: 
                         nodes.append(xnode.kids[0])
@@ -966,7 +967,7 @@ class Protocol(xmlstream.Node):
            and if a match is found it will be returned."""
         if val is not None:
             nodes = []
-            if type(val) == type(""):
+            if isinstance(val, str):
                 for xnode in self.getTags('x'):
                     if xnode.getNamespace() == val: nodes.append(xnode)
                 return nodes
@@ -1242,7 +1243,7 @@ class Iq(Protocol):
         if q is None:
             q = self.insertTag('query')
 
-        if type(payload) == type('') or type(payload) == type(u''):
+        if isinstance(payload, str) or isinstance(payload, unicode):
             payload = xmlstream.NodeBuilder(payload).getDom()
 
         if not add: 
@@ -1485,7 +1486,8 @@ class Roster:
 class JID:
     """A Simple class for managing jabber users id's """
     def __init__(self, jid='', node='', domain='', resource=''):
-        if type(jid)==type(self):
+        #if isinstance(jid, self):
+        if type(jid) is type(self):
             self.node = jid.node
             self.domain = jid.domain
             self.resource = jid.resource
@@ -1518,6 +1520,7 @@ class JID:
 
     __repr__ = __str__
 
+    #FIXME: None of these work as advertised in the docstring.  ARD 1OCT09
     def getNode(self):
         """Returns JID Node as string"""
         return self.node

@@ -4,7 +4,7 @@ import sys
 import string
 from qt import *
 import StringIO
-import jabber
+import chupycabra
 import time
 
 from threading import *
@@ -13,7 +13,7 @@ from xml.sax import make_parser
 
 
 def sendMessage (con, to, msg):
-    msg = jabber.Message(to, msg)
+    msg = chupycabra.Message(to, msg)
     msg.setType('chat')
     print 'send ->', msg
     con.send(msg)
@@ -82,7 +82,7 @@ class RosterList( QWidget ):
                                        'Please enter handle of user to add', 'new user')
         if newUser and newUser[1]:
             if con:
-                con.send(jabber.Presence(str(newUser[0]), 'subscribe'))
+                con.send(chupycabra.Presence(str(newUser[0]), 'subscribe'))
 
     def addUser (self, userName, status):
         if not self.users.has_key(userName):
@@ -170,7 +170,7 @@ class ChatWindow (QWidget):
 
 
     def sendMessage (self, con, to, msg):
-        msg = jabber.Message(to, msg)
+        msg = chupycabra.Message(to, msg)
         msg.setType('chat')
         print 'send ->', msg
         con.send(msg)
@@ -263,11 +263,11 @@ class DocumentWindow (QMainWindow):
             type = 'available'
 
         if type == 'subscribe':
-            con.send(jabber.Presence(to=who, type='subscribed'))
-            con.send(jabber.Presence(to=who, type='subscribe'))
+            con.send(chupycabra.Presence(to=who, type='subscribed'))
+            con.send(chupycabra.Presence(to=who, type='subscribe'))
         elif type == 'unsubscribe':
-            con.send(jabber.Presence(to=who, type='unsubscribed'))
-            con.send(jabber.Presence(to=who, type='unsubscribe'))
+            con.send(chupycabra.Presence(to=who, type='unsubscribed'))
+            con.send(chupycabra.Presence(to=who, type='unsubscribe'))
 
 
     def messageCB(self, con, msg):
@@ -348,7 +348,7 @@ class DocumentWindow (QMainWindow):
 
 userName = ''
 password = ''
-hostname = 'jabber.org'
+hostname = 'chupycabra.org'
 
 for x in xrange(1, len(sys.argv)):
     if sys.argv[x] == '-u':
@@ -364,7 +364,7 @@ for x in xrange(1, len(sys.argv)):
 con = None
 
 if hostname:
-    con = jabber.Client(host=hostname)
+    con = chupycabra.Client(host=hostname)
     if con:
         try:
             con.connect()

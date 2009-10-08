@@ -11,20 +11,20 @@ mallum <breakfast@10.am>
 """
 
 # FIXME: Broken on 8 OCT 09 by removing backwards compatibility methods
-# from jabber.py.  ARD
+# from chupycabra.py.  ARD
 # $Id: jrpc.py,v 1.6 2003/11/08 19:00:07 snakeru Exp $
 
 import sys
 
 ## Import jabber module
-import jabber
+import chupycabra
 
 ## Import xmlrpclib - http://www.pythonware.com/products/xmlrpc/index.htm 
 import xmlrpclib
 
 ## Setup server and auth varibles
 ## You'll need to edit these. 
-Server   = 'jabber.com'
+Server   = 'chupycabra.com'
 Username = 'xxxx'
 Password = 'xxxx'
 Resource = 'xmlrpc'
@@ -59,7 +59,7 @@ def iq_xmlrpc_response_CB(con,iq):
 
 
 ## Get a jabber connection object, with logging to stderr
-con = jabber.Client(host=Server,log=sys.stderr)
+con = chupycabra.Client(host=Server,log=sys.stderr)
 
 ## Try and connect
 try:
@@ -95,7 +95,7 @@ xmlrpc_req = xmlrpclib.dumps( params , methodname=method)
 
 ## Birth an iq ojbject to send to self
 iqTo = "jrpchttp.gnu.mine.nu/http://validator.userland.com:80/RPC2"
-iq = jabber.Iq(to=iqTo, type="set")
+iq = chupycabra.Iq(to=iqTo, type="set")
 
 ## Set the i'qs query namespace
 iq.setQuery('jabber:iq:rpc')

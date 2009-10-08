@@ -14,7 +14,7 @@ import gtk, _gtk, GDK
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 sys.path.insert(1, os.path.join(sys.path[0], '../util'))
 
-import jabber
+import chupycabra
 import sleepy
 
 TRUE = 1
@@ -142,7 +142,7 @@ class Chat_Tab(Tab): ### Make bigger and Better !!!
 
     def recieve(self,obj):
         if obj.getFrom().getStripped() == self._id:
-            if str(obj.__class__) == 'jabber.Message':
+            if str(obj.__class__) == 'chupycabra.Message':
                 if obj.getError():
                     err_code = ''
                     if obj.getErrorCode(): err_code = obj.getErrorCode()
@@ -154,7 +154,7 @@ class Chat_Tab(Tab): ### Make bigger and Better !!!
                                      "<%s> " % obj.getFrom().getStripped())
                     self._txt.insert(None,None, None, "%s\n" % obj.getBody())
                 return TRUE
-            if str(obj.__class__) == 'jabber.Presence':
+            if str(obj.__class__) == 'chupycabra.Presence':
                 if obj.getType() != 'unavailable':
                     self._txt.insert(None,self.cols['green'], None,
                                      "<%s> ( %s / %s )\n" % 
@@ -237,7 +237,7 @@ class Url_Tab(Tab): ### Make bigger and Better !!!
 
 
     def recieve(self,obj):
-        if str(obj.__class__) == 'jabber.Message':
+        if str(obj.__class__) == 'chupycabra.Message':
             m = self._regexp.match(obj.getBody())
             if m:
                 list_item = gtk.GtkListItem(m.group())
@@ -292,9 +292,9 @@ class Roster_Tab(Tab): ### Make bigger and Better !!!
         return self._roster_selected
 
     def recieve(self,obj):
-        if str(obj.__class__) != 'jabber.Message':
-            if str(obj.__class__) == 'jabber.Iq':
-                if obj.getQuery() == jabber.NS_ROSTER:
+        if str(obj.__class__) != 'chupycabra.Message':
+            if str(obj.__class__) == 'chupycabra.Iq':
+                if obj.getQuery() == chupycabra.NS_ROSTER:
                     self.paint_tree() ## only paint if roster iq
             else:
                 self.paint_tree() ## a presence 
@@ -377,7 +377,7 @@ class Logon_dialog(gtk.GtkWindow):
 
         self.password = ''
         self.username = ''
-        self.server   = 'jabber.org'
+        self.server   = 'chupycabra.org'
         self.done     = None
 
         self.connect("delete_event", self.delete_event)
@@ -498,8 +498,8 @@ class New_ac_dialog(gtk.GtkWindow):
         self.add(self.vbox)
 
         self.frame = gtk.GtkFrame("New Account")
-        self.jabber.requestRegInfo(self.agent)
-        req = self.jabber.getRegInfo()
+        self.chupycabra.requestRegInfo(self.agent)
+        req = self.chupycabra.getRegInfo()
 
         self.table = gtk.GtkTable(6,6,gtk.FALSE)
         self.instr_lbl = gtk.GtkLabel(req[u'instructions'])
@@ -534,11 +534,11 @@ class New_ac_dialog(gtk.GtkWindow):
 
     def register(self,*args):
         for info in self.entrys.keys():
-            self.jabber.setRegInfo( info,
+            self.chupycabra.setRegInfo( info,
                                     self.entrys[info]['entry'].get_text() )
         self.username = self.entrys['username']['entry'].get_text()
         self.password = self.entrys['password']['entry'].get_text()
-        self.jabber.sendRegInfo(self.agent)
+        self.chupycabra.sendRegInfo(self.agent)
         self.done = OK
 
     def delete_event(win, event=None):
@@ -888,10 +888,10 @@ class mainWindow(gtk.GtkWindow):         # Usual Base
         if action == 1:
             # available
             self.jabberObj.presence_details = [ 'available', None ]
-            pres = jabber.Presence()
+            pres = chupycabra.Presence()
         else:
             self.jabberObj.presence_details = [ 'unavailable', None ]
-            pres = jabber.Presence(type='unavailable')
+            pres = chupycabra.Presence(type='unavailable')
 
         self.jabberObj.send(pres)
             
@@ -900,7 +900,7 @@ class mainWindow(gtk.GtkWindow):         # Usual Base
         while dia.done is None:
             self.jabberObj.process()
         type, show = dia.done
-        pres = jabber.Presence(type=type)
+        pres = chupycabra.Presence(type=type)
         pres.setShow(show)
         self.jabberObj.presence_details = [ type, show ]
         self.jabberObj.send(pres)
@@ -946,7 +946,7 @@ class mainWindow(gtk.GtkWindow):         # Usual Base
         add_dia = Add_dialog(self, self.jabberObj )      
         while (add_dia.done is None):
             self.jabberObj.process()
-        self.jabberObj.send(jabber.Presence(add_dia.done, 'subscribe'))
+        self.jabberObj.send(chupycabra.Presence(add_dia.done, 'subscribe'))
         add_dia.close()
 
     def removeCB(self,*args):
@@ -958,7 +958,7 @@ class mainWindow(gtk.GtkWindow):         # Usual Base
                              )
         while (msg_dia.done is None): self.jabberObj.process()
         if (msg_dia.done == MSG_DIA_RET_OK):
-            self.jabberObj.send(jabber.Presence(to=who, type='unsubscribe'))
+            self.jabberObj.send(chupycabra.Presence(to=who, type='unsubscribe'))
         msg_dia.close()
 
     def closeTabCB(self, *args):
@@ -1004,7 +1004,7 @@ class mainWindow(gtk.GtkWindow):         # Usual Base
         #gtk.mainquit()
         sys.exit(0)
 
-class jabberClient(jabber.Client):
+class jabberClient(chupycabra.Client):
     def __init__(self):
         self.sleeper = None
         self.sleeper_state = None
@@ -1019,7 +1019,7 @@ class jabberClient(jabber.Client):
 
             server   = login_dia.server
 
-            jabber.Client.__init__(self,host=server,debug=0)
+            chupycabra.Client.__init__(self,host=server,debug=0)
             try:
                 self.connect()
             except:
@@ -1056,7 +1056,7 @@ class jabberClient(jabber.Client):
                 #print "eek -> ", self.lastErr, self.lastErrCode
                 sys.exit(1)
 
-        self.loggedin_jid     = jabber.JID( node = username, domain = server,
+        self.loggedin_jid     = chupycabra.JID( node = username, domain = server,
                                         resource = resource );
         self.presence_details = [ 'available', None ]
         
@@ -1084,7 +1084,7 @@ class jabberClient(jabber.Client):
     def addChatTabViaRoster(self, *args):
         jid_raw = self.gui.getTab(0).get_roster_selection()
         if jid_raw:
-            jid = jabber.JID(jid_raw)
+            jid = chupycabra.JID(jid_raw)
             i = 0
             for t in self.gui.getTabs():
                 if t.getJID() == jid.getStripped():
@@ -1104,7 +1104,7 @@ class jabberClient(jabber.Client):
     def messageSend(self, *args):
         tab = args[-1]
         msg = tab.getData()
-        msg_obj = jabber.Message(tab._id, msg)
+        msg_obj = chupycabra.Message(tab._id, msg)
         msg_obj.setType('chat')
         self.send(msg_obj)
 
@@ -1138,11 +1138,11 @@ class jabberClient(jabber.Client):
                                  )
             while (msg_dia.done is None): self.process()
             if (msg_dia.done == MSG_DIA_RET_OK):
-                self.send(jabber.Presence(to=who, type='subscribed'))
+                self.send(chupycabra.Presence(to=who, type='subscribed'))
                 
                 if who not in self.getRoster().getJIDs() or \
                    self.getRoster().getSub(who) != 'both':
-                    self.send(jabber.Presence(to=who, type='subscribe'))
+                    self.send(chupycabra.Presence(to=who, type='subscribe'))
             msg_dia.close()
 
         elif type == 'unsubscribe' and not self._unsub_lock:
@@ -1153,7 +1153,7 @@ class jabberClient(jabber.Client):
                                  )
             while (msg_dia.done is None): self.process()
             if (msg_dia.done == MSG_DIA_RET_OK):
-                self.send(jabber.Presence(to=who, type='unsubscribed'))
+                self.send(chupycabra.Presence(to=who, type='unsubscribed'))
             msg_dia.close()
 
 
@@ -1167,7 +1167,7 @@ class jabberClient(jabber.Client):
 
     def process(self,time=0.1):
         while gtk.events_pending(): gtk.mainiteration()
-        jabber.Client.process(self,time)
+        chupycabra.Client.process(self,time)
 
         if self.sleeper:
             state_pres = None
@@ -1175,11 +1175,11 @@ class jabberClient(jabber.Client):
             state = self.sleeper.getState()
             if state != self.sleeper_state:
                 if state == sleepy.STATE_WOKEN:
-                    state_pres = jabber.Presence(type='available')
+                    state_pres = chupycabra.Presence(type='available')
                     state_pres.setStatus('online')
                     state_pres.setShow('')
                 if state == sleepy.STATE_SLEEPING:
-                    state_pres = jabber.Presence(type='available')
+                    state_pres = chupycabra.Presence(type='available')
                     state_pres.setStatus('away')
                     state_pres.setShow('Away from computer')
                 if state_pres: self.send(state_pres)

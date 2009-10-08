@@ -6,7 +6,7 @@ import socket
 from select import select
 from string import split,strip,join
 import sys,os
-import jabber
+import chupycabra
 
 True = 1
 False = 0
@@ -136,23 +136,23 @@ def doCmd(con,txt):
     if cmd[0] == 'presence':
         to = cmd[1]
         type = cmd[2]
-        con.send(jabber.Presence(to, type))
+        con.send(chupycabra.Presence(to, type))
     elif cmd[0] == 'status':
-        p = jabber.Presence()
+        p = chupycabra.Presence()
         MyStatus = ' '.join(cmd[1:])
         p.setStatus(MyStatus)
         con.send(p)
     elif cmd[0] == 'show':
-        p = jabber.Presence()
+        p = chupycabra.Presence()
         MyShow = ' '.join(cmd[1:])
         p.setShow(MyShow)
         con.send(p)
     elif cmd[0] == 'subscribe':
         to = cmd[1]
-        con.send(jabber.Presence(to, 'subscribe'))
+        con.send(chupycabra.Presence(to, 'subscribe'))
     elif cmd[0] == 'unsubscribe':
         to = cmd[1]
-        con.send(jabber.Presence(to, 'unsubscribe'))
+        con.send(chupycabra.Presence(to, 'unsubscribe'))
     elif cmd[0] == 'roster':
         con.requestRoster()
         _roster = con.getRoster()
@@ -202,7 +202,7 @@ def doCmd(con,txt):
 def doSend(con,txt):
     global Who
     if Who != '':
-        msg = jabber.Message(Who, txt.strip())
+        msg = chupycabra.Message(Who, txt.strip())
         msg.setType('chat')
         #pg_log("<%s> %s" % (JID, msg.getBody()))
         con.send(msg)
@@ -230,16 +230,16 @@ def presenceCB(con, prs):
     # - send request for subscription to their presence
     if type == 'subscribe':
         pg_log(colorize("subscribe request from %s" % (who), 'blue'))
-        con.send(jabber.Presence(to=str(who), type='subscribed'))
-        con.send(jabber.Presence(to=str(who), type='subscribe'))
+        con.send(chupycabra.Presence(to=str(who), type='subscribed'))
+        con.send(chupycabra.Presence(to=str(who), type='subscribe'))
 
     # unsubscription request: 
     # - accept their unsubscription
     # - send request for unsubscription to their presence
     elif type == 'unsubscribe':
         pg_log(colorize("unsubscribe request from %s" % (who), 'blue'))
-        con.send(jabber.Presence(to=str(who), type='unsubscribed'))
-        con.send(jabber.Presence(to=str(who), type='unsubscribe'))
+        con.send(chupycabra.Presence(to=str(who), type='unsubscribed'))
+        con.send(chupycabra.Presence(to=str(who), type='unsubscribe'))
 
     elif type == 'subscribed':
         pg_log(colorize("we are now subscribed to %s" % (who), 'blue'))
@@ -306,11 +306,11 @@ Username = ''
 Password = ''
 Resource = 'default'
 
-con = jabber.Client(host=Server,debug=False,log=None)
+con = chupycabra.Client(host=Server,debug=False,log=None)
 
 # Experimental SSL support
 #
-# con = jabber.Client(host=Server,debug=True ,log=sys.stderr,
+# con = chupycabra.Client(host=Server,debug=True ,log=sys.stderr,
 #                    port=5223, connection=xmlstream.TCP_SSL)
 
 try:

@@ -8,8 +8,8 @@ doctest.testfile("jid.py")
 """
 
 # Bare domain JID
->>> import jabber
->>> domain_jid = jabber.JID(domain="example.com")
+>>> import chupycabra
+>>> domain_jid = chupycabra.JID(domain="example.com")
 >>> domain_jid.node
 ''
 >>> domain_jid.domain
@@ -21,7 +21,7 @@ example.com
 
 # Pass in a full JID
 >>> fulljid = "login@example.com/chupycabra"
->>> jid_fulljid = jabber.JID(jid=fulljid)
+>>> jid_fulljid = chupycabra.JID(jid=fulljid)
 >>> jid_fulljid
 login@example.com/chupycabra
 >>> jid_fulljid.node
@@ -36,13 +36,13 @@ True
 # Should return node as string.  Since JID.node already does this, why
 # bother?
 >>> fulljid = "login@example.com/chupycabra"
->>> jid_fulljid = jabber.JID(jid=fulljid)
+>>> jid_fulljid = chupycabra.JID(jid=fulljid)
 >>> jid_fulljid.getNode
 <bound method JID.getNode of login@example.com/chupycabra>
 
 # Test with bare jid
 >>> barejid = "login@example.com"
->>> jid_barejid = jabber.JID(jid=barejid)
+>>> jid_barejid = chupycabra.JID(jid=barejid)
 >>> jid_barejid
 login@example.com
 >>> barejid

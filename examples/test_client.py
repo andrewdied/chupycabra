@@ -12,7 +12,7 @@ import sys,os
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
-import jabber
+import chupycabra
 
 True = 1
 False = 0
@@ -24,7 +24,7 @@ Who = ''
 MyStatus = ''
 MyShow   = ''
 
-#jabber.xmlstream.ENCODING='koi8-r'      # Default is "utf-8"
+#chupycabra.xmlstream.ENCODING='koi8-r'      # Default is "utf-8"
 
 def usage():
     print "%s: a simple python jabber client " % sys.argv[0]
@@ -45,23 +45,23 @@ def doCmd(con,txt):
         elif cmd[0] == '/presence':
             to = cmd[1]
             type = cmd[2]
-            con.send(jabber.Presence(to, type))
+            con.send(chupycabra.Presence(to, type))
         elif cmd[0] == '/status':
-            p = jabber.Presence()
+            p = chupycabra.Presence()
             MyStatus = ' '.join(cmd[1:])
             p.setStatus(MyStatus)
             con.send(p)
         elif cmd[0] == '/show':
-            p = jabber.Presence()
+            p = chupycabra.Presence()
             MyShow = ' '.join(cmd[1:])
             p.setShow(MyShow)
             con.send(p)
         elif cmd[0] == '/subscribe':
             to = cmd[1]
-            con.send(jabber.Presence(to, 'subscribe'))
+            con.send(chupycabra.Presence(to, 'subscribe'))
         elif cmd[0] == '/unsubscribe':
             to = cmd[1]
-            con.send(jabber.Presence(to, 'unsubscribe'))
+            con.send(chupycabra.Presence(to, 'unsubscribe'))
         elif cmd[0] == '/roster':
             con.requestRoster()
             _roster = con.getRoster()
@@ -107,7 +107,7 @@ def doCmd(con,txt):
             print colorize("uh?", 'red')
     else:
         if Who != '':
-            msg = jabber.Message(Who, strip(txt))
+            msg = chupycabra.Message(Who, strip(txt))
             msg.setType('chat')
             print "<%s> %s" % (JID, msg.getBody())
             con.send(msg)
@@ -133,16 +133,16 @@ def presenceCB(con, prs):
     # - send request for subscription to their presence
     if type == 'subscribe':
         print colorize(u"subscribe request from %s" % (who), 'blue')
-        con.send(jabber.Presence(to=who, type='subscribed'))
-        con.send(jabber.Presence(to=who, type='subscribe'))
+        con.send(chupycabra.Presence(to=who, type='subscribed'))
+        con.send(chupycabra.Presence(to=who, type='subscribe'))
 
     # unsubscription request: 
     # - accept their unsubscription
     # - send request for unsubscription to their presence
     elif type == 'unsubscribe':
         print colorize(u"unsubscribe request from %s" % (who), 'blue')
-        con.send(jabber.Presence(to=who, type='unsubscribed'))
-        con.send(jabber.Presence(to=who, type='unsubscribe'))
+        con.send(chupycabra.Presence(to=who, type='unsubscribed'))
+        con.send(chupycabra.Presence(to=who, type='unsubscribe'))
 
     elif type == 'subscribed':
         print colorize(u"we are now subscribed to %s" % (who), 'blue')
@@ -169,7 +169,7 @@ def disconnectedCB(con):
 def colorize(txt, col):
     """Return colorized text"""
     if not USE_COLOR: return txt ## DJ - just incase it breaks your terms ;) ##
-    if type(txt)==type(u''): txt=txt.encode(jabber.xmlstream.ENCODING,'replace')
+    if type(txt)==type(u''): txt=txt.encode(chupycabra.xmlstream.ENCODING,'replace')
     cols = { 'red':1, 'green':2, 'yellow':3, 'blue':4}
     initcode = '\033[;3'
     endcode  = '\033[0m'
@@ -186,11 +186,11 @@ Password = ''
 Resource = 'default'
 
 
-con = jabber.Client(host=Server,debug=jabber.DBG_ALWAYS ,log=sys.stderr)
+con = chupycabra.Client(host=Server,debug=chupycabra.DBG_ALWAYS ,log=sys.stderr)
 
 # Experimental SSL support
 #
-# con = jabber.Client(host=Server,debug=True ,log=sys.stderr,
+# con = chupycabra.Client(host=Server,debug=True ,log=sys.stderr,
 #                    port=5223, connection=xmlstream.TCP_SSL)
 
 try:

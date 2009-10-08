@@ -652,4 +652,3 @@ class Server:
             if s.getSocket() == sock:
                 return s
         return None
-

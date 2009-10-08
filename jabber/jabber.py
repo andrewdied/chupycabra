@@ -63,7 +63,7 @@ An example of usage for a simple client is:
 <> Call requestRoster() and sendPresence()
 
 <> loop over process(). Send Iqs, messages and presences by birthing
-   them via there respective clients, manipulating them and using
+   them via their respective clients, manipulating them and using
    the Client's send() method.
 
 <> Respond to incoming elements passed to your callback functions.
@@ -174,7 +174,7 @@ NS_P_COMMANDS   = _NS_PROTOCOL + "/commands" # JEP-0050
 # NS_COMP_EXECUTE = "jabber:component:execute" # myname
 
 ## Possible constants for Roster class .... hmmm ##
-# ARD: I don't like constants.  Look at later.
+# FIXME ARD: I don't like constants.  Look at later.
 RS_SUB_BOTH = 0
 RS_SUB_FROM = 1
 RS_SUB_TO = 2
@@ -232,24 +232,6 @@ class Connection(xmlstream.Client):
 
         self.lastErr = ''
         self.lastErrCode = 0
-
-    def setMessageHandler(self, func, type='', chainOutput=False):
-        """Back compatibility method"""
-        print "WARNING! setMessageHandler(...) method is obsolete, use \
-        registerHandler('message',...) instead."
-        return self.registerHandler('message', func, type, chained=chainOutput)
-
-    def setPresenceHandler(self, func, type='', chainOutput=False):
-        """Back compatibility method"""
-        print "WARNING! setPresenceHandler(...) method is obsolete, use \
-        registerHandler('presence',...) instead."
-        return self.registerHandler('presence', func, type, chained=chainOutput)
-
-    def setIqHandler(self, func, type='', ns=''):
-        """Back compatibility method"""
-        print "WARNING! setIqHandler(...) method is obsolete, use \
-        registerHandler('iq',...) instead."
-        return self.registerHandler('iq', func, type, ns)
 
     def header(self):
         self.DEBUG("stream: sending initial header", DBG_INIT)
@@ -629,18 +611,15 @@ class Client(Connection):
         self.DEBUG("roster -> %s" % ustr(self._roster), DBG_NODE_IQ)
         return self._roster
 
-
     def getRoster(self):
         """Returns the current Roster() class instance. Does
            not contact the server."""
         return self._roster
 
-
     def addRosterItem(self, jid):
         """ Send off a request to subscribe to the given jid.
         """
         self.send(Presence(to=jid, type="subscribe"))
-
 
     def updateRosterItem(self, jid, name=None, groups=None):
         """ Update the information stored in the roster about a roster item.
@@ -836,12 +815,6 @@ class Protocol(xmlstream.Node):
         self._node = self
         xmlstream.Node.__init__(self, tag=name, attrs=attrs, payload=payload, 
                                 node=node)
-
-    def asNode(self):
-        """Back compatibility method"""
-        print 'WARNING! "asNode()" method is obsolete, use Protocol object \
-            as Node object instead.'
-        return self
 
     def getError(self):
         """Returns the error string, if any"""
@@ -1050,7 +1023,6 @@ class Message(Protocol):
         else:
             body = self.insertTag('body').putData(val)
 
-
     def setSubject(self, val):
         """Sets the message subject text."""
         subj = self.getTag('subject')
@@ -1058,7 +1030,6 @@ class Message(Protocol):
             subj.putData(val)
         else:
             self.insertTag('subject').putData(val)
-
 
     def setThread(self, val):
         """Sets the message thread ID."""
@@ -1068,12 +1039,10 @@ class Message(Protocol):
         else:
             self.insertTag('thread').putData(val)
 
-
     def setTimestamp(self, val=None):
         if not val:
             val = time.strftime('%Y%m%dT%H:%M:%S', time.gmtime(time.time()))
         self.time_stamp = val
-
 
     def buildReply(self, reply_txt=''):
         """Returns a new Message object as a reply to itself.
@@ -1215,14 +1184,12 @@ class Iq(Protocol):
             q.setNamespace(namespace)
         return q
 
-
     def getList(self):
         "returns the list namespace"
         return self._getTag('list')
 
     def setList(self, namespace):
         return self._setTag('list', namespace)
-
 
     def getQuery(self):
         "returns the query namespace"
@@ -1328,7 +1295,6 @@ class Roster:
         if self._data.has_key(jid):
             return self._data[jid]['status']
         return None
-
 
     def getShow(self, jid):   ## extended
         """Returns the 'show' value for a Roster item with the given jid."""

@@ -10,6 +10,8 @@ For more info on this technique see http://www.pipetree.com/jabber/jrpc.html
 mallum <breakfast@10.am>
 """
 
+# FIXME: Broken on 8 OCT 09 by removing backwards compatibility methods
+# from jabber.py.  ARD
 # $Id: jrpc.py,v 1.6 2003/11/08 19:00:07 snakeru Exp $
 
 import sys

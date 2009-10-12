@@ -94,7 +94,9 @@ class Node:
     """A simple XML DOM like class"""
     def __init__(self, tag=None, parent=None, attrs={}, payload=[], node=None):
         if node:
-            if not isinstance(node, self):
+            # FIXME This isinstance is not the same somehow.  ARD, 12OCT09
+            #if not isinstance(node, self):
+            if type(node) != type(self):
                 node = NodeBuilder(node).getDom()
             self.name, self.namespace, self.attrs, self.data, self.kids, \
             self.parent = node.name, node.namespace, node.attrs, node.data, \
@@ -652,4 +654,3 @@ class Server:
             if s.getSocket() == sock:
                 return s
         return None
-

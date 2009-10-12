@@ -17,7 +17,7 @@ except:
     
 setup(name="chupycabra",
       version="0.1",
-      #py_modules=["xmlstream","jabber"],
+      # FIXME: find out why this doesn't get the tests subdirectory. ARD
       packages=["chupycabra"],
       description="Python XMPP library",
       author="A. R. Diederich",

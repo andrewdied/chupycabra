@@ -180,7 +180,7 @@ class Debug:
             
         self._remove_dupe_flags()
         if log_file:
-            if isinstance(logfile, str):
+            if isinstance(log_file, str):
                 try:
                     self._fh = open(log_file,'w')
                 except:

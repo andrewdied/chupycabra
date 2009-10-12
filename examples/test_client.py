@@ -35,7 +35,7 @@ def usage():
     sys.exit(0)
 
 
-def doCmd(con,txt):
+def doCmd(con, txt):
     global Who
     if txt[0] == '/' :
         cmd = split(txt)
@@ -186,7 +186,8 @@ Password = ''
 Resource = 'default'
 
 
-con = chupycabra.Client(host=Server,debug=chupycabra.DBG_ALWAYS ,log=sys.stderr)
+con = chupycabra.Client(host=Server, debug=chupycabra.DBG_ALWAYS, 
+                        log=sys.stderr)
 
 # Experimental SSL support
 #

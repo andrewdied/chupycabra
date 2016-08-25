@@ -1,7 +1,9 @@
 ##   debug.py 
 ##
+##   Copyright (C) 2009 A. R. Diederich <andrewdied@gmail.com)
 ##   Copyright (C) 2003 Jacob Lundqvist
 ##
+## FIXME: put in header for LGPL 2.1
 ##   This program is free software; you can redistribute it and/or modify
 ##   it under the terms of the GNU Lesser General Public License as published
 ##   by the Free Software Foundation; either version 2, or (at your option)
@@ -163,7 +165,7 @@ class Debug:
                   encoding = None
                   ):
 
-        if type(active_flags) not in [type([]), type(())]:
+        if not isinstance(active_flags, (list, tuple)):
             print  '***' 
             print  '*** Invalid or oldformat debug param given: %s' % active_flags
             print  '*** please correct your param, should be of [] type!'
@@ -178,7 +180,7 @@ class Debug:
             
         self._remove_dupe_flags()
         if log_file:
-            if type( log_file ) is type(''):
+            if isinstance(log_file, str):
                 try:
                     self._fh = open(log_file,'w')
                 except:
@@ -271,8 +273,8 @@ class Debug:
                 # dont print "None", just show the separator
                 output = '%s %s' % ( output, self.flag_show )
 
-        if type(msg)==type(u'') and self.encoding:
-            msg=msg.encode(self.encoding, 'replace')
+        if isinstance(msg, unicode) and self.encoding:
+            msg = msg.encode(self.encoding, 'replace')
 
         output = '%s%s%s' % ( output, msg, suf )
         if lf:
@@ -307,7 +309,7 @@ class Debug:
             return 1
         else:
             # check for multi flag type:
-            if type( flag ) in ( type(()), type([]) ):
+            if isinstance(flag, (list, tuple)):
                 for s in flag:
                     if s in self.active:
                         return 1
@@ -321,8 +323,8 @@ class Debug:
         if not active_flags:
             #no debuging at all
             self.active = []
-        elif type( active_flags ) in ( types.TupleType, types.ListType ):
-            flags = self._as_one_list( active_flags )
+        elif isinstance(active_flags, (list, tuple)):
+            flags = self._as_one_list(active_flags)
             for t in flags:
                 if t not in debug_flags:
                     print 'Invalid debugflag given', t
@@ -360,12 +362,12 @@ class Debug:
         
         This code organises lst and remves dupes
         """
-        if type( items ) <> type( [] ) and type( items ) <> type( () ):
-            return [ items ]
+        if not isinstance(items, list) and not isinstance(items, tuple):
+            return [items]
         r = []
         for l in items:
-            if type( l ) == type([]):
-                lst2 = self._as_one_list( l )
+            if isinstance(l, list):
+                lst2 = self._as_one_list(l)
                 for l2 in lst2: 
                     self._append_unique_str(r, l2 )
             elif l == None:
@@ -377,7 +379,7 @@ class Debug:
     
     def _append_unique_str( self, lst, item ):
         """filter out any dupes."""
-        if type(item) <> type(''):
+        if not isinstance(item, str):
             msg2 = '%s' % item
             raise 'Invalid item type (should be string)',msg2
         if item not in lst:

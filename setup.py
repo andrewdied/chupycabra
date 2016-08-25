@@ -1,11 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 import sys
 
 try:
     from distutils.core import setup
 except:
     if sys.version[0] < 2:
-        print "jabber.py requires at least python 2.0"
+        print "chupycabra requires at least python 2.0"
         print "Setup cannot continue."
         sys.exit(1)
     print "You appear not to have the Python distutils modules"
@@ -15,19 +15,13 @@ except:
     print "directory."
     sys.exit(1)
     
-setup(name="jabber.py",
-      version="0.3-1",
-      #py_modules=["xmlstream","jabber"],
-      packages=["jabber"],
-      description="Python xmlstream and jabber IM protocol libs",
-      author="Matthew Allum",
-      author_email="breakfast@10.am",
-      url="http://jabberpy.sf.net/",
+setup(name="chupycabra",
+      version="0.1",
+      # FIXME: find out why this doesn't get the tests subdirectory. ARD
+      packages=["chupycabra"],
+      description="Python XMPP library",
+      author="A. R. Diederich",
+      author_email="andrewdied@gmail.com",
+      url="https://launchpad.net/chupycabra",
       license="LGPL"
       )
-
-
-
-
-
-

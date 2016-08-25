@@ -1,3 +1,23 @@
+    6 A. R. Diederich	2009-10-05 [merge]
+      Fixes overwriting builtins for type and str, modified setup.py to be chupycabra (code still broken), used more 'isinstance', and changed VERSION to __version__
+
+    5 A. R. Diederich	2009-09-30 [merge]
+      Replaced depricated sha with good hashlib
+
+    4 A. R. Diederich	2009-09-23 [merge]
+      Done with easy pylint fixing.
+
+    3 A. R. Diederich	2009-09-23 [merge]
+      Re-preparing for first update push
+
+    2 A. R. Diederich	2009-09-23 [merge]
+      Preparing for first update push
+
+    1 A. R. Diederich	2009-09-17
+      Initial code and commit
+
+Initial jabberpy changelog:
+
 2001-12-04 12:22  mallum
 
 	* ChangeLog, jabber.py, examples/pygtkjab.py: small fixes to X

@@ -1,6 +1,6 @@
 README
 CREDITS
-jabber.py
+chupycabra.py
 xmlstream.py
 setup.py
 examples/README
@@ -12,6 +12,4 @@ examples/mailchecker.py
 examples/offline.xpm
 examples/online.xpm
 examples/pending.xpm
-util/sleepy.py
-docs/index.html
 

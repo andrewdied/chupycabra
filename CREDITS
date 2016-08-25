@@ -1,4 +1,12 @@
+Credits
 
+Matthew Allum gets the biggest credit for writing the very helpful, easy to
+use jabberpy library, http://jabberpy.sourcefoge.net.  
+
+And a big shout-out to all the folks from Jabber, Inc. who got me on to
+this great protocol.
+
+Credits from the original jabberpy:
 DJ Adams
       Lots of help with protocol implentation / Bug fixes 
 Brian Lalor

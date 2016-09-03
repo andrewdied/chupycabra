@@ -5,24 +5,8 @@
     Copyright (C) 2009 A. R. Diederich
     Much is based on jabberpy, (C) 2001 Matthew Allum
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
-    USA
-
 xmlstream.py provides simple functionality for implementing
-XML stream based network protocols. It is used as a  base
-for jabber.py.
+XML stream based network protocols.
 
 xmlstream.py manages the network connectivity and xml parsing
 of the stream. When a complete 'protocol element' (meaning a
@@ -39,6 +23,7 @@ import sys
 import time
 from select import select
 from base64 import encodestring
+import ssl
 import xml.parsers.expat
 import debug
 _debug = debug
@@ -514,9 +499,9 @@ class Client(Stream):
         if self._connection == TCP_SSL:
             try:
                 self.DEBUG("Attempting to create ssl socket", DBG_INIT)
-                self._sslObj = socket.ssl(self._sock, None, None)
-                self._sslIssuer = self._sslObj.issuer()
-                self._sslServer = self._sslObj.server()
+                context = ssl.create_default_context()
+                context.check_hostname = False
+                self._sslObj = context.wrap_socket(self._sock)
             except:
                 self.DEBUG("Socket Error: No SSL Support", DBG_CONN_ERROR)
                 raise

@@ -35,14 +35,12 @@ False = 0
 True  = 1
 
 # FIXME: I hate constants. ARD
-TCP     = 1
-STDIO   = 0
+TCP = 1
+STDIO = 0
 TCP_SSL = 2
 
 ENCODING = 'utf-8'      # Though it is uncommon, this is the only right setting.
-ustr = str
-
-BLOCK_SIZE  = 1024     ## Number of bytes to get at at time via socket
+BLOCK_SIZE = 1024     ## Number of bytes to get at at time via socket
                        ## transactions
 
 DBG_INIT, DBG_ALWAYS = debug.DBG_INIT, debug.DBG_ALWAYS
@@ -191,7 +189,7 @@ class Node:
             if parent and parent.namespace != self.namespace:
                 s = s + " xmlns = '%s' " % self.namespace
         for key in self.attrs.keys():
-            val = ustr(self.attrs[key])
+            val = str(self.attrs[key])
             s = s + " %s='%s'" % (key, XMLescape(val))
         s = s + ">"
         cnt = 0

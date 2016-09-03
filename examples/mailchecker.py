@@ -302,7 +302,7 @@ for c in clients.keys():
     con.send(p)
 
 try:
-    while(1):
+    while 1:
         con.process(10)
 
         # whoo baby, is this a kludge.  Should really have a bona-fide event

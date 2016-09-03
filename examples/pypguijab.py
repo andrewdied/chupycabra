@@ -229,7 +229,7 @@ def presenceCB(con, prs):
     # - accept their subscription
     # - send request for subscription to their presence
     if type == 'subscribe':
-        pg_log(colorize("subscribe request from %s" % (who), 'blue'))
+        pg_log(colorize("subscribe request from %s" % who, 'blue'))
         con.send(chupycabra.Presence(to=str(who), type='subscribed'))
         con.send(chupycabra.Presence(to=str(who), type='subscribe'))
 

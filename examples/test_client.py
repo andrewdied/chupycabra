@@ -14,6 +14,7 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import chupycabra
 
+
 True = 1
 False = 0
 
@@ -132,7 +133,7 @@ def presenceCB(con, prs):
     # - accept their subscription
     # - send request for subscription to their presence
     if type == 'subscribe':
-        print colorize(u"subscribe request from %s" % (who), 'blue')
+        print colorize(u"subscribe request from %s" % who, 'blue')
         con.send(chupycabra.Presence(to=who, type='subscribed'))
         con.send(chupycabra.Presence(to=who, type='subscribe'))
 
@@ -140,15 +141,15 @@ def presenceCB(con, prs):
     # - accept their unsubscription
     # - send request for unsubscription to their presence
     elif type == 'unsubscribe':
-        print colorize(u"unsubscribe request from %s" % (who), 'blue')
+        print colorize(u"unsubscribe request from %s" % who, 'blue')
         con.send(chupycabra.Presence(to=who, type='unsubscribed'))
         con.send(chupycabra.Presence(to=who, type='unsubscribe'))
 
     elif type == 'subscribed':
-        print colorize(u"we are now subscribed to %s" % (who), 'blue')
+        print colorize(u"we are now subscribed to %s" % who, 'blue')
 
     elif type == 'unsubscribed':
-        print colorize(u"we are now unsubscribed to %s"  % (who), 'blue')
+        print colorize(u"we are now unsubscribed to %s" % who, 'blue')
 
     elif type == 'available':
         print colorize(u"%s is available (%s / %s)" % \
@@ -186,13 +187,14 @@ Password = ''
 Resource = 'default'
 
 
-con = chupycabra.Client(host=Server, debug=chupycabra.DBG_ALWAYS, 
-                        log=sys.stderr)
+# jabber.org no longer accepts plaintext on port 5222
+#con = chupycabra.Client(host=Server, debug=chupycabra.DBG_ALWAYS,
+                        #log=sys.stderr)
 
+# FIXME: Move to TLS on port 5222
 # Experimental SSL support
-#
-# con = chupycabra.Client(host=Server,debug=True ,log=sys.stderr,
-#                    port=5223, connection=xmlstream.TCP_SSL)
+con = chupycabra.Client(host=Server, debug=True ,log=sys.stderr,
+                   port=5223, connection=chupycabra.xmlstream.TCP_SSL)
 
 try:
     con.connect()

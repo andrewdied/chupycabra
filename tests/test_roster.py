@@ -54,7 +54,7 @@ def test_get_jid_list():
 
 def test_getSummary_jid():
     """Returns a list of JIDs and their status"""
-    assert roster.getSummary() == {u'romeo@example.com': 'offline', u'juliet@example.org': 'offline'}
+    assert roster.online_summary() == {u'romeo@example.com': 'offline', u'juliet@example.org': 'offline'}
 
 
 def test_jid_info():

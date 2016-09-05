@@ -1347,14 +1347,13 @@ class Roster:
             return self._data[jid]['ask']
         return None
 
-    def getSummary(self):
+
+    def online_summary(self):
         """Returns a summary of the roster's contents.  The returned value is a
-           dictionary mapping the basic (no resource) JIDs to their current
+           dictionary mapping the basic (no resource) JID string to their current
            availability status (online, offline, pending). """
-        to_ret = {}
-        for jid in self._data.keys():
-            to_ret[jid] = self._data[jid]['online']
-        return to_ret
+        return {key: self._data[key]['online'] for key in self._data.keys()}
+
 
     def getJIDs(self):
         """Returns a list of JIDs stored within the roster.  Each entry in the
@@ -1364,9 +1363,11 @@ class Roster:
             to_ret.append(JID(jid))
         return to_ret
 
+
     def getRaw(self):
         """Returns the internal data representation of the roster."""
         return self._data
+
 
     def isOnline(self, jid):
         """Returns True if the given jid is online, False if not."""
@@ -1375,6 +1376,7 @@ class Roster:
             return False
         else:
             return True
+
 
     def _set(self, jid, name, groups, sub, ask):
         # meant to be called by actual iq tag

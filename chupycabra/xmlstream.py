@@ -25,6 +25,7 @@ from select import select
 from base64 import encodestring
 import ssl
 import xml.parsers.expat
+import warnings
 import debug
 
 _debug = debug
@@ -116,18 +117,22 @@ class Node:
 
     def setParent(self, node):
         "Set the node's parent node."
+        warnings.warn('getParent should not be called, just use Node.parent', DeprecationWarning)
         self.parent = node
 
     def getParent(self):
         "return the node's parent node."
+        warnings.warn('setParent should not be called, just use Node.parent', DeprecationWarning)
         return self.parent
 
     def getName(self):
         "Set the node's tag name."
+        warnings.warn('getName should not be called, just use Node.name', DeprecationWarning)
         return self.name
 
     def setName(self, val):
         "Set the node's tag name."
+        warnings.warn('getName should not be called, just use Node.name', DeprecationWarning)
         self.name = val
 
     def putAttr(self, key, val):
@@ -136,7 +141,6 @@ class Node:
 
     def getAttr(self, key):
         "Get a value for the nodes named attribute."
-        # FIXME: This should be an if block
         try:
             return self.attrs[key]
         except:
@@ -160,10 +164,12 @@ class Node:
 
     def getNamespace(self):
         "Returns the nodes namespace."
+        warnings.warn('getNamespace should not be called, just use Node.namespace', DeprecationWarning)
         return self.namespace
 
     def setNamespace(self, namespace):
         "Set the nodes namespace."
+        warnings.warn('setNamespace should not be called, just use Node.namespace', DeprecationWarning)
         self.namespace = namespace
 
     def insertTag(self, name=None, attrs={}, payload=[], node=None):
@@ -189,6 +195,8 @@ class Node:
 
     def __str__(self):
         return self._xmlnode2str()
+
+
 
     def _xmlnode2str(self, parent=None):
         """Returns an xml ( string ) representation of the node

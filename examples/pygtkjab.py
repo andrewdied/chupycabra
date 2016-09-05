@@ -34,9 +34,9 @@ Known = {
 
 def makeKnownNice(jid):
     for known in Known.keys():
-        if re.match("^"+known+".*", jid.getDomain()):
-            if jid.getNode():
-                return jid.getNode()
+        if re.match("^"+known+".*", jid.domainpart):
+            if jid.nodepart:
+                return jid.nodepart
             else:
                 return known + " transport"
     return str(jid)
@@ -112,7 +112,7 @@ class Chat_Tab(Tab): ### Make bigger and Better !!!
     def __init__(self, gui, jid, title='a tab'):
         Tab.__init__(self, gui, title)
 
-        self._id = str(jid.getStripped())
+        self._id = str(jid.bare())
         
         self._scroll = gtk.GtkScrolledWindow()
         self._txt = gtk.GtkText()
@@ -141,7 +141,7 @@ class Chat_Tab(Tab): ### Make bigger and Better !!!
 
 
     def recieve(self,obj):
-        if obj.getFrom().getStripped() == self._id:
+        if obj.getFrom().bare() == self._id:
             if str(obj.__class__) == 'chupycabra.Message':
                 if obj.getError():
                     err_code = ''
@@ -151,19 +151,19 @@ class Chat_Tab(Tab): ### Make bigger and Better !!!
                                      err_code) )
                 else:
                     self._txt.insert(None,self.cols['red'], None,
-                                     "<%s> " % obj.getFrom().getStripped())
+                                     "<%s> " % obj.getFrom().bare())
                     self._txt.insert(None,None, None, "%s\n" % obj.getBody())
                 return TRUE
             if str(obj.__class__) == 'chupycabra.Presence':
                 if obj.getType() != 'unavailable':
                     self._txt.insert(None,self.cols['green'], None,
                                      "<%s> ( %s / %s )\n" % 
-                                     ( obj.getFrom().getStripped(),
+                                     ( obj.getFrom().bare(),
                                        obj.getStatus(), obj.getShow() ) )
                 else:
                     self._txt.insert(None,self.cols['green'], None,
                                      "<%s> went offline\n" % 
-                                     obj.getFrom().getStripped() )
+                                     obj.getFrom().bare() )
                 return TRUE
         return FALSE
     
@@ -171,7 +171,7 @@ class Chat_Tab(Tab): ### Make bigger and Better !!!
         txt = self._entry.get_text() 
         self._entry.set_text('')
         self._txt.insert(None,None,None, "<%s> %s\n" %
-                         ( self.gui.jabberObj.loggedin_jid.getStripped(), txt)
+                         ( self.gui.jabberObj.loggedin_jid.bare(), txt)
                          )
         return txt
 
@@ -1087,7 +1087,7 @@ class jabberClient(chupycabra.Client):
             jid = chupycabra.JID(jid_raw)
             i = 0
             for t in self.gui.getTabs():
-                if t.getJID() == jid.getStripped():
+                if t.getJID() == jid.bare():
                     self.gui.notebook.set_page(i)
                     return
                 i=i+1
@@ -1129,7 +1129,7 @@ class jabberClient(chupycabra.Client):
     def presenceHandler(self, prs_obj):
 
         type = prs_obj.getType()
-        who  = prs_obj.getFrom().getStripped()
+        who  = prs_obj.getFrom().bare()
 
         if type == 'subscribe':
             msg_dia = Msg_dialog(None,

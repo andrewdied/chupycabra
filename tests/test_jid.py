@@ -36,40 +36,6 @@ def test_domain_jid_creation_parts():
     assert domain_jid_created_parts == domain_jid
 
 
-def test_get_node():
-    full_jid_obj_get_node = JID(jid=full_jid)
-    assert full_jid_obj_get_node.getNode() == 'romeo'
-
-
-def test_set_node():
-    full_jid_obj_set_node = JID(jid=full_jid)
-    full_jid_obj_set_node.setNode('Montague')
-    assert full_jid_obj_set_node.getNode() == 'Montague'
-
-
-def test_get_domain():
-    full_jid_obj_get_domain = JID(jid=full_jid)
-    assert full_jid_obj_get_domain.getDomain() == 'example.net'
-
-
-def test_set_domain():
-    full_jid_obj_set_domain = JID(jid=full_jid)
-    full_jid_obj_set_domain.setDomain('example.org')
-    assert full_jid_obj_set_domain.getDomain() == 'example.org'
-
-
-def test_get_resoure():
-    full_jid_obj_get_resource = JID(jid=full_jid)
-    assert full_jid_obj_get_resource.getResource() == 'resource1'
-
-
-def test_set_resource():
-    full_jid_obj_set_resource = JID(jid=full_jid)
-    assert full_jid_obj_set_resource.getResource() == 'resource1'
-    full_jid_obj_set_resource.setResource('resource2')
-    assert full_jid_obj_set_resource.getResource() == 'resource2'
-
-
 def test_get_stripped():
     full_jid_obj_stripped = JID(jid=full_jid)
     assert full_jid_obj_stripped.getStripped() == 'romeo@example.net'

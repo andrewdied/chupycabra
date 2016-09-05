@@ -55,8 +55,8 @@ debug = xmlstream.debug
 __version__ = xmlstream.__version__
 
 # FIXME  Bug 432064: use real True and False
-#False = 0
-#True = 1
+# False = 0
+# True = 1
 
 timeout = 300
 
@@ -208,7 +208,7 @@ class Connection(xmlstream.Client):
 
     def header(self):
         self.DEBUG("stream: sending initial header", DBG_INIT)
-        #header = u"<?xml version='1.0' encoding='UTF-8' ?>   \
+        # header = u"<?xml version='1.0' encoding='UTF-8' ?>   \
         header = u"<?xml version='1.0'?>   \
             <stream:stream to='%s' xmlns='%s' xml:lang='en' version='1.0'" % (self._host, self._namespace)
 
@@ -1388,7 +1388,8 @@ class Roster:
             if self._listener != None:
                 self._listener("update", jid, {'online': val})
         else:  ## fall back
-            jid_basic = JID(jid).getStripped()
+            jid_basic = JID(jid).getStripped() #_data wants to use the bare JID as a hash key
+            #jid_basic = JID(jid).bare()
             if self._data.has_key(jid_basic):
                 self._data[jid_basic]['online'] = val
                 if self._listener != None:
@@ -1403,6 +1404,7 @@ class Roster:
                 self._listener("update", jid, {'show': val})
         else:  ## fall back
             jid_basic = JID(jid).getStripped()
+            #jid_basic = JID(jid).bare()
             if self._data.has_key(jid_basic):
                 self._data[jid_basic]['show'] = val
                 if self._listener != None:
@@ -1416,7 +1418,8 @@ class Roster:
             if self._listener != None:
                 self._listener("update", jid, {'status': val})
         else:  ## fall back
-            jid_basic = JID(jid).getStripped()
+            jid_basic = JID(jid).getStripped() #_data wants to use the bare JID as a hash key
+            #jid_basic = JID(jid).bare()
             if self._data.has_key(jid_basic):
                 self._data[jid_basic]['status'] = val
                 if self._listener != None:
@@ -1452,83 +1455,51 @@ script associated with a server).
     def __init__(self, jid='', node='', domain='', resource=''):
         # if isinstance(jid, self):
         if type(jid) is type(self):
-            self.node = jid.node
-            self.domain = jid.domain
-            self.resource = jid.resource
+            self.localpart = jid.localpart
+            self.domainpart = jid.domainpart
+            self.resourcepart = jid.resourcepart
         elif jid:
             if jid.find('@') == -1:
-                self.node = ''
+                self.localpart = ''
             else:
                 bits = jid.split('@', 1)
-                self.node = bits[0]
+                self.localpart = bits[0]
                 jid = bits[1]
 
             if jid.find('/') == -1:
-                self.domain = jid
-                self.resource = ''
+                self.domainpart = jid
+                self.resourcepart = ''
             else:
-                self.domain, self.resource = jid.split('/', 1)
+                self.domainpart, self.resourcepart = jid.split('/', 1)
         else:
-            self.node = node
-            self.domain = domain
-            self.resource = resource
+            self.localpart = node
+            self.domainpart = domain
+            self.resourcepart = resource
 
-        self.localpart = self.node
-        self.domainpart = self.domain
-        self.resourcepart = self.resource
+        #self.localpart = self.node
+        #self.domainpart = self.domain
+        #self.resourcepart = self.resource
 
-        #FIXME: Add one check that domainpart exists -- you must have at least domain for a valid JID
-
+        # FIXME: Add one check that domainpart exists -- you must have at least domain for a valid JID
 
     def __str__(self):
-        jid_str = self.domain
-        if self.node:
-            jid_str = self.node + '@' + jid_str
-        if self.resource:
-            jid_str += '/' + self.resource
+        jid_str = self.domainpart
+        if self.localpart:
+            jid_str = self.localpart + '@' + jid_str
+        if self.resourcepart:
+            jid_str += '/' + self.resourcepart
         return jid_str
 
     __repr__ = __str__
 
 
-    def getNode(self):
-        """Returns JID Node as string"""
-        warnings.warn('getNode should not be called, just use JID.localpart', DeprecationWarning)
-        return self.localpart
-
-    def getDomain(self):
-        """Returns JID domain as string or None if absent"""
-        warnings.warn('getDomain should not be called, just use JID.domainpart', DeprecationWarning)
-        return self.domainpart
-
-    def getResource(self):
-        """Returns JID resource as string or None if absent"""
-        warnings.warn('getResoure should not be called, just use JID.resourcepart', DeprecationWarning)
-        return self.resourcepart
-
-    def setNode(self, val):
-        """Sets JID Node from string"""
-        warnings.warn('setNode should not be called, just use JID.localpart', DeprecationWarning)
-        self.localpart = val
-
-    def setDomain(self, val):
-        """Sets JID domain from string"""
-        warnings.warn('setDomain should not be called, just use JID.domainpart', DeprecationWarning)
-        self.domainpart = val
-
-    def setResource(self, val):
-        """Sets JID resource from string"""
-        warnings.warn('setResource should not be called, just use JID.resourcepart', DeprecationWarning)
-        self.resourcepart = val
-
     def getStripped(self):
         """Returns a JID string with no resource"""
-        warnings.warn('getStripped should not be called, just use JID.bare()', DeprecationWarning)
-        if self.node:
-            return self.node + '@' + self.domain
+        warnings.warn('getStripped should not be called, just use JID.bare(). Nuts, someone is using this as a dictionary key.', DeprecationWarning)
+        if self.localpart:
+            return self.localpart + '@' + self.domainpart
         else:
-            return self.domain
-
+            return self.domainpart
 
     def bare(self):
         """Returns a bare JID object"""

@@ -160,7 +160,7 @@ def presenceCB(con, prs):
 
 
 def iqCB(con,iq):
-    """Called when an iq is recieved, we just let the library handle it at the moment"""
+    """Called when an iq is received, we just let the library handle it at the moment"""
     pass
 
 def disconnectedCB(con):
@@ -169,8 +169,10 @@ def disconnectedCB(con):
 
 def colorize(txt, col):
     """Return colorized text"""
-    if not USE_COLOR: return txt ## DJ - just incase it breaks your terms ;) ##
-    if type(txt)==type(u''): txt=txt.encode(chupycabra.xmlstream.ENCODING,'replace')
+    if not USE_COLOR:
+        return txt ## DJ - just incase it breaks your terms ;) ##
+    if type(txt)==type(u''):
+        txt=txt.encode(chupycabra.xmlstream.ENCODING,'replace')
     cols = { 'red':1, 'green':2, 'yellow':3, 'blue':4}
     initcode = '\033[;3'
     endcode  = '\033[0m'

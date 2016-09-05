@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# coding=utf-8
 
 """
     Chupycabra: A jabber python library
@@ -45,6 +46,8 @@ An example of usage for a simple client is:
 
 import hashlib
 import time
+import warnings
+
 import xmlstream
 
 debug = xmlstream.debug
@@ -52,8 +55,8 @@ debug = xmlstream.debug
 __version__ = xmlstream.__version__
 
 # FIXME  Bug 432064: use real True and False
-False = 0
-True = 1
+#False = 0
+#True = 1
 
 timeout = 300
 
@@ -1430,7 +1433,21 @@ class Roster:
 #############################################################################
 
 class JID:
-    """A Simple class for managing jabber users id's """
+    """A simple class for managing jabber IDs.
+    Normative reference: http://xmpp.org/rfcs/rfc6122.html,
+    Extensible Messaging and Presence Protocol (XMPP): Address Format
+
+    The terms "localpart", "domainpart", and "resourcepart" are defined in [XMPP‑ADDR].
+    jid = [ localpart "@" ] domainpart [ "/" resourcepart ]
+
+The term "bare JID" refers to an XMPP address of the form <localpart@domainpart>
+ (for an account at a server) or of the form <domainpart> (for a server).
+
+The term "full JID" refers to an XMPP address of the form <localpart@domainpart/resourcepart>
+(for a particular authorized client or device associated with an account) or
+of the form <domainpart/resourcepart> (for a particular resource or
+script associated with a server).
+"""
 
     def __init__(self, jid='', node='', domain='', resource=''):
         # if isinstance(jid, self):
@@ -1456,6 +1473,13 @@ class JID:
             self.domain = domain
             self.resource = resource
 
+        self.localpart = self.node
+        self.domainpart = self.domain
+        self.resourcepart = self.resource
+
+        #FIXME: Add one check that domainpart exists -- you must have at least domain for a valid JID
+
+
     def __str__(self):
         jid_str = self.domain
         if self.node:
@@ -1466,37 +1490,49 @@ class JID:
 
     __repr__ = __str__
 
-    # FIXME: None of these work as advertised in the docstring.  ARD 1OCT09
+
     def getNode(self):
         """Returns JID Node as string"""
-        return self.node
+        warnings.warn('getNode should not be called, just use JID.localpart', DeprecationWarning)
+        return self.localpart
 
     def getDomain(self):
         """Returns JID domain as string or None if absent"""
-        return self.domain
+        warnings.warn('getDomain should not be called, just use JID.domainpart', DeprecationWarning)
+        return self.domainpart
 
     def getResource(self):
         """Returns JID resource as string or None if absent"""
-        return self.resource
+        warnings.warn('getResoure should not be called, just use JID.resourcepart', DeprecationWarning)
+        return self.resourcepart
 
     def setNode(self, val):
         """Sets JID Node from string"""
-        self.node = val
+        warnings.warn('setNode should not be called, just use JID.localpart', DeprecationWarning)
+        self.localpart = val
 
     def setDomain(self, val):
         """Sets JID domain from string"""
-        self.domain = val
+        warnings.warn('setDomain should not be called, just use JID.domainpart', DeprecationWarning)
+        self.domainpart = val
 
     def setResource(self, val):
         """Sets JID resource from string"""
-        self.resource = val
+        warnings.warn('setResource should not be called, just use JID.resourcepart', DeprecationWarning)
+        self.resourcepart = val
 
     def getStripped(self):
         """Returns a JID string with no resource"""
+        warnings.warn('getStripped should not be called, just use JID.bare()', DeprecationWarning)
         if self.node:
             return self.node + '@' + self.domain
         else:
             return self.domain
+
+
+    def bare(self):
+        """Returns a bare JID object"""
+        return JID(node=self.localpart, domain=self.domainpart)
 
     def __eq__(self, other):
         """Returns whether this JID is identical to another one.

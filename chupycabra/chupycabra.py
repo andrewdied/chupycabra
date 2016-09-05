@@ -1273,8 +1273,23 @@ class Roster:
         """
         self._listener = listener
 
+
+    def jid_info(self, jid, info=None):
+        """Returns the name, groups, online, subscription (sub), ask, presence (show)
+        or status value. Returns None if the item is not present.
+
+        Input is a JID string and a string of name, groups, online, sub, ask, show,
+        or status."""
+
+        jid = ustr(jid)
+        try:
+            return self._data[jid][info]
+        except KeyError:
+            return None
+
     def getStatus(self, jid):  ## extended
         """Returns the 'status' value for a Roster item with the given jid."""
+        warnings.warn('getStatus should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
         if self._data.has_key(jid):
             return self._data[jid]['status']
@@ -1282,6 +1297,7 @@ class Roster:
 
     def getShow(self, jid):  ## extended
         """Returns the 'show' value for a Roster item with the given jid."""
+        warnings.warn('getShow should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
         if self._data.has_key(jid):
             return self._data[jid]['show']
@@ -1290,6 +1306,7 @@ class Roster:
     def getOnline(self, jid):  ## extended
         """Returns the 'online' status for a Roster item with the given jid.
            """
+        warnings.warn('getOnline should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
         if self._data.has_key(jid):
             return self._data[jid]['online']
@@ -1298,6 +1315,7 @@ class Roster:
     def getSub(self, jid):
         """Returns the 'subscription' status for a Roster item with the given
            jid."""
+        warnings.warn('getSub should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
         if self._data.has_key(jid):
             return self._data[jid]['sub']
@@ -1305,6 +1323,7 @@ class Roster:
 
     def getName(self, jid):
         """Returns the 'name' for a Roster item with the given jid."""
+        warnings.warn('getName should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
         if self._data.has_key(jid):
             return self._data[jid]['name']
@@ -1314,6 +1333,7 @@ class Roster:
         """ Returns the list of groups associated with the given 
         roster item.
         """
+        warnings.warn('getGroups should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
         if self._data.has_key(jid):
             return self._data[jid]['groups']
@@ -1321,6 +1341,7 @@ class Roster:
 
     def getAsk(self, jid):
         """Returns the 'ask' status for a Roster item with the given jid."""
+        warnings.warn('getAsk should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
         if self._data.has_key(jid):
             return self._data[jid]['ask']

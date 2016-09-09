@@ -156,20 +156,15 @@ RS_EXT_PENDING = 0
 
 #############################################################################
 
-def ustr(what):
-    """If sending object is already a unicode str, just
-       return it, otherwise convert it using xmlstream.ENCODING"""
-    if isinstance(what, unicode):
-        r = what
+
+def ustr(text):
+    """return a unicode string"""
+    if isinstance(text, unicode):
+        return text
+    elif isinstance(text, str):
+        return text.decode(xmlstream.ENCODING)
     else:
-        try:
-            r = what.__str__()
-        except AttributeError:
-            r = str(what)
-        # make sure __str__() didnt return a unicode
-        if not isinstance(r, unicode):
-            r = unicode(r, xmlstream.ENCODING, 'replace')
-    return r
+        return str(text).decode(xmlstream.ENCODING, errors='replace')
 
 
 xmlstream.ustr = ustr

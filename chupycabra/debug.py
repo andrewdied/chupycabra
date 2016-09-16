@@ -1,6 +1,5 @@
 ##   debug.py 
 ##
-##   Copyright (C) 2009 A. R. Diederich <andrewdied@gmail.com)
 ##   Copyright (C) 2003 Jacob Lundqvist
 ##
 ## FIXME: put in header for LGPL 2.1

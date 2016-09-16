@@ -5,40 +5,38 @@
 # You may need to change the above line to point at
 # python rather than python2 depending on your os/distro
 
-import socket
+import os
+import sys
 from select import select
-from string import split,strip,join
-import sys,os
+from string import split, strip
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import chupycabra
 
-
-True = 1
-False = 0
+# True = 1
+# False = 0
 
 # Change this to 0 if you dont want a color xterm
 USE_COLOR = 1
 
 Who = ''
 MyStatus = ''
-MyShow   = ''
+MyShow = ''
 
-#chupycabra.xmlstream.ENCODING='koi8-r'      # Default is "utf-8"
 
 def usage():
     print "%s: a simple python jabber client " % sys.argv[0]
     print "usage:"
     print "%s <server> - connect to <server> and register" % sys.argv[0]
-    print "%s <server> <username> <password> <resource>"   % sys.argv[0]
+    print "%s <server> <username> <password> <resource>" % sys.argv[0]
     print "            - connect to server and login   "
     sys.exit(0)
 
 
 def doCmd(con, txt):
     global Who
-    if txt[0] == '/' :
+    if txt[0] == '/':
         cmd = split(txt)
         if cmd[0] == '/select':
             Who = cmd[1]
@@ -67,11 +65,11 @@ def doCmd(con, txt):
             con.requestRoster()
             _roster = con.getRoster()
             for jid in _roster.getJIDs():
-                print colorize(u"%s :: %s (%s/%s)" 
-                               % ( jid, _roster.getOnline(jid),
-                                   _roster.getStatus(jid),
-                                   _roster.getShow(jid),
-                                   ) , 'blue' )
+                print colorize(u"%s :: %s (%s/%s)"
+                               % (jid, _roster.getOnline(jid),
+                                  _roster.getStatus(jid),
+                                  _roster.getShow(jid),
+                                  ), 'blue')
 
         elif cmd[0] == '/agents':
             print con.requestAgents()
@@ -83,7 +81,7 @@ def doCmd(con, txt):
             print con.getRegInfo()
         elif cmd[0] == '/exit':
             con.disconnect()
-            print colorize("Bye!",'red')
+            print colorize("Bye!", 'red')
             sys.exit(0)
         elif cmd[0] == '/help':
             print "commands are:"
@@ -113,15 +111,16 @@ def doCmd(con, txt):
             print "<%s> %s" % (JID, msg.getBody())
             con.send(msg)
         else:
-            print colorize('Nobody selected','red')
-            
+            print colorize('Nobody selected', 'red')
+
 
 def messageCB(con, msg):
     """Called when a message is recieved"""
-    if msg.getBody(): ## Dont show blank messages ##
+    if msg.getBody():  ## Dont show blank messages ##
         print colorize(
             u'<' + str(msg.getFrom()) + '>', 'green'
-            ) + ' ' + msg.getBody()
+        ) + ' ' + msg.getBody()
+
 
 def presenceCB(con, prs):
     """Called when a presence is recieved"""
@@ -153,33 +152,37 @@ def presenceCB(con, prs):
 
     elif type == 'available':
         print colorize(u"%s is available (%s / %s)" % \
-                       (who, prs.getShow(), prs.getStatus()),'blue')
+                       (who, prs.getShow(), prs.getStatus()), 'blue')
     elif type == 'unavailable':
         print colorize(u"%s is unavailable (%s / %s)" % \
-                       (who, prs.getShow(), prs.getStatus()),'blue')
+                       (who, prs.getShow(), prs.getStatus()), 'blue')
 
 
-def iqCB(con,iq):
+def iqCB(con, iq):
     """Called when an iq is received, we just let the library handle it at the moment"""
     pass
+
 
 def disconnectedCB(con):
     print colorize("Ouch, network error", 'red')
     sys.exit(1)
 
+
 def colorize(txt, col):
     """Return colorized text"""
     if not USE_COLOR:
-        return txt ## DJ - just incase it breaks your terms ;) ##
-    if type(txt)==type(u''):
-        txt=txt.encode(chupycabra.xmlstream.ENCODING,'replace')
-    cols = { 'red':1, 'green':2, 'yellow':3, 'blue':4}
+        return txt  ## DJ - just incase it breaks your terms ;) ##
+    if type(txt) == type(u''):
+        txt = txt.encode(chupycabra.xmlstream.ENCODING, 'replace')
+    cols = {'red': 1, 'green': 2, 'yellow': 3, 'blue': 4}
     initcode = '\033[;3'
-    endcode  = '\033[0m'
-    if type(col) == type(1): 
+    endcode = '\033[0m'
+    if type(col) == type(1):
         return initcode + str(col) + 'm' + txt + endcode
-    try: return initcode + str(cols[col]) + 'm' + txt + endcode
-    except: return txt
+    try:
+        return initcode + str(cols[col]) + 'm' + txt + endcode
+    except:
+        return txt
 
 
 if len(sys.argv) == 1: usage()
@@ -188,15 +191,14 @@ Username = ''
 Password = ''
 Resource = 'default'
 
-
 # jabber.org no longer accepts plaintext on port 5222
-#con = chupycabra.Client(host=Server, debug=chupycabra.DBG_ALWAYS,
-                        #log=sys.stderr)
+# con = chupycabra.Client(host=Server, debug=chupycabra.DBG_ALWAYS,
+# log=sys.stderr)
 
 # FIXME: Move to TLS on port 5222
 # Experimental SSL support
-con = chupycabra.Client(host=Server, debug=True ,log=sys.stderr,
-                   port=5223, connection=chupycabra.xmlstream.TCP_SSL)
+con = chupycabra.Client(host=Server, debug=True, log=sys.stderr,
+                        port=5223, connection=chupycabra.xmlstream.TCP_SSL)
 
 try:
     con.connect()
@@ -204,11 +206,11 @@ except IOError, e:
     print "Couldn't connect: %s" % e
     sys.exit(0)
 else:
-    print colorize("Connected",'red')
+    print colorize("Connected", 'red')
 
-con.registerHandler('message',messageCB)
-con.registerHandler('presence',presenceCB)
-con.registerHandler('iq',iqCB)
+con.registerHandler('message', messageCB)
+con.registerHandler('presence', presenceCB)
+con.registerHandler('iq', iqCB)
 con.setDisconnectHandler(disconnectedCB)
 
 if len(sys.argv) == 2:
@@ -218,9 +220,9 @@ if len(sys.argv) == 2:
     print req[u'instructions']
     for info in req.keys():
         if info != u'instructions' and \
-           info != u'key':
+                        info != u'key':
             print "enter %s;" % info
-            con.setRegInfo( info,strip(sys.stdin.readline()) )
+            con.setRegInfo(info, strip(sys.stdin.readline()))
     con.sendRegInfo()
     req = con.getRegInfo()
     Username = req['username']
@@ -232,36 +234,24 @@ else:
 
 print colorize("Attempting to log in...", 'red')
 
-
-if con.auth(Username,Password,Resource):
-    print colorize(u"Logged in as %s to server %s" % ( Username, Server), 'red')
+if con.auth(Username, Password, Resource):
+    print colorize(u"Logged in as %s to server %s" % (Username, Server), 'red')
 else:
     print "eek -> ", con.lastErr, con.lastErrCode
     sys.exit(1)
 
-print colorize("Requesting Roster Info" , 'red')
+print colorize("Requesting Roster Info", 'red')
 con.requestRoster()
 con.sendInitPresence()
-print colorize("Ok, ready" , 'red')
+print colorize("Ok, ready", 'red')
 print colorize("Type /help for help", 'red')
 
 JID = Username + '@' + Server + '/' + Resource
 
-while(1):
-    inputs, outputs, errors = select([sys.stdin], [], [],1)
+while (1):
+    inputs, outputs, errors = select([sys.stdin], [], [], 1)
 
     if sys.stdin in inputs:
-        doCmd(con,sys.stdin.readline())
+        doCmd(con, sys.stdin.readline())
     else:
         con.process(1)
-    
-        
-
-
-
-
-
-
-
-
-

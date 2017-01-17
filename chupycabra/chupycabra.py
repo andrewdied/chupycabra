@@ -54,10 +54,6 @@ debug = xmlstream.debug
 
 __version__ = xmlstream.__version__
 
-# FIXME  Bug 432064: use real True and False
-# False = 0
-# True = 1
-
 timeout = 300
 
 DBG_INIT, DBG_ALWAYS = debug.DBG_INIT, debug.DBG_ALWAYS

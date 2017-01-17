@@ -218,8 +218,7 @@ class Connection(xmlstream.Client):
         xmlstream.Client.write(self, ustr(what))
 
     def _expectedIqHandler(self, conn, iq_obj):
-        if iq_obj.getAttr('id') and \
-                self._expected.has_key(iq_obj.getAttr('id')):
+        if iq_obj.getAttr('id') and iq_obj.getAttr('id') in self._expected:
             self._expected[iq_obj.getAttr('id')] = iq_obj
             raise NodeProcessed('No need for further Iq processing.')
 
@@ -228,7 +227,7 @@ class Connection(xmlstream.Client):
            Builds the relevant jabber.py object and dispatches it
            to a relevant function or callback."""
         name = stanza.getName()
-        if not self.handlers.has_key(name):
+        if not name in self.handlers:
             self.DEBUG("whats a tag -> " + name, DBG_NODE_UNKNOWN)
             name = 'unknown'
         else:
@@ -252,11 +251,11 @@ class Connection(xmlstream.Client):
             typns = typ + ns
         else:
             typns = ''
-        if not self.handlers[name].has_key(ns):
+        if not ns in self.handlers[name]:
             ns = ''
-        if not self.handlers[name].has_key(typ):
+        if not typ in self.handlers[name]:
             typ = ''
-        if not self.handlers[name].has_key(typns):
+        if not typns in self.handlers[name]:
             typns = ''
 
         chain = []
@@ -329,7 +328,8 @@ class Connection(xmlstream.Client):
         """
         if not type_ and not ns:
             type_ = 'default'
-        if not self.handlers[name].has_key(type_ + ns):
+        #if not self.handlers[name].has_key(type_ + ns):
+        if not type_ + ns in self.handlers[name]:
             self.handlers[name][type_ + ns] = []
         if makefirst:
             self.handlers[name][type_ + ns].insert({'chain': chained,
@@ -1338,7 +1338,7 @@ class Roster:
         """Returns the 'status' value for a Roster item with the given jid."""
         warnings.warn('getStatus should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
-        if self._data.has_key(jid):
+        if jid in self._data:
             return self._data[jid]['status']
         return None
 
@@ -1346,7 +1346,7 @@ class Roster:
         """Returns the 'show' value for a Roster item with the given jid."""
         warnings.warn('getShow should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
-        if self._data.has_key(jid):
+        if jid in self._data:
             return self._data[jid]['show']
         return None
 
@@ -1355,7 +1355,7 @@ class Roster:
            """
         warnings.warn('getOnline should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
-        if self._data.has_key(jid):
+        if jid in self._data:
             return self._data[jid]['online']
         return None
 
@@ -1364,7 +1364,7 @@ class Roster:
            jid."""
         warnings.warn('getSub should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
-        if self._data.has_key(jid):
+        if jid in self._data:
             return self._data[jid]['sub']
         return None
 
@@ -1372,7 +1372,7 @@ class Roster:
         """Returns the 'name' for a Roster item with the given jid."""
         warnings.warn('getName should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
-        if self._data.has_key(jid):
+        if jid in self._data:
             return self._data[jid]['name']
         return None
 
@@ -1382,7 +1382,7 @@ class Roster:
         """
         warnings.warn('getGroups should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
-        if self._data.has_key(jid):
+        if jid in self._data:
             return self._data[jid]['groups']
         return None
 
@@ -1390,7 +1390,7 @@ class Roster:
         """Returns the 'ask' status for a Roster item with the given jid."""
         warnings.warn('getAsk should not be called, use Roster.jid_info(jid, info).', DeprecationWarning)
         jid = ustr(jid)
-        if self._data.has_key(jid):
+        if jid in self._data:
             return self._data[jid]['ask']
         return None
 
@@ -1432,7 +1432,7 @@ class Roster:
         online = 'offline'
         if ask:
             online = 'pending'
-        if self._data.has_key(jid):  # update it
+        if jid in self._data:  # update it
             self._data[jid]['name'] = name
             self._data[jid]['groups'] = groups
             self._data[jid]['ask'] = ask
@@ -1453,14 +1453,14 @@ class Roster:
     def _setOnline(self, jid, val):
         """Used internally - private"""
         jid = ustr(jid)
-        if self._data.has_key(jid):
+        if jid in self._data:
             self._data[jid]['online'] = val
             if self._listener != None:
                 self._listener("update", jid, {'online': val})
         else:  ## fall back
             jid_basic = JID(jid).getStripped() #_data wants to use the bare JID as a hash key
             #jid_basic = JID(jid).bare()
-            if self._data.has_key(jid_basic):
+            if jid_basic in self._data:
                 self._data[jid_basic]['online'] = val
                 if self._listener != None:
                     self._listener("update", jid_basic, {'online': val})
@@ -1468,14 +1468,14 @@ class Roster:
     def _setShow(self, jid, val):
         """Used internally - private"""
         jid = ustr(jid)
-        if self._data.has_key(jid):
+        if jid in self._data:
             self._data[jid]['show'] = val
             if self._listener != None:
                 self._listener("update", jid, {'show': val})
         else:  ## fall back
             jid_basic = JID(jid).getStripped()
             #jid_basic = JID(jid).bare()
-            if self._data.has_key(jid_basic):
+            if jid_basic in self._data:
                 self._data[jid_basic]['show'] = val
                 if self._listener != None:
                     self._listener("update", jid_basic, {'show': val})
@@ -1483,21 +1483,21 @@ class Roster:
     def _setStatus(self, jid, val):
         """Used internally - private"""
         jid = ustr(jid)
-        if self._data.has_key(jid):
+        if jid in self._data:
             self._data[jid]['status'] = val
             if self._listener != None:
                 self._listener("update", jid, {'status': val})
         else:  ## fall back
             jid_basic = JID(jid).getStripped() #_data wants to use the bare JID as a hash key
             #jid_basic = JID(jid).bare()
-            if self._data.has_key(jid_basic):
+            if jid_basic in self._data:
                 self._data[jid_basic]['status'] = val
                 if self._listener != None:
                     self._listener("update", jid_basic, {'status': val})
 
     def _remove(self, jid):
         """Used internally - private"""
-        if self._data.has_key(jid):
+        if jid in self._data:
             del self._data[jid]
             if self._listener != None:
                 self._listener("remove", jid, {})

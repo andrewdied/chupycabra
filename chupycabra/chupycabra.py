@@ -869,7 +869,7 @@ class Protocol(xmlstream.Node):
         x = self.getTag('x', index)
         if not x:
             x = self.insertTag('x')
-        x.setNamespace(namespace)
+        x.namespace = namespace
         return x
 
     def setXPayload(self, payload, namespace=''):
@@ -1208,7 +1208,7 @@ class Iq(Protocol):
             q.namespace = namespace
         else:
             q = self.insertTag(tag)
-            q.setNamespace(namespace)
+            q.namespace = namespace
         return q
 
     def getList(self):

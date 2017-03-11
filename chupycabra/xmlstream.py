@@ -98,16 +98,6 @@ class Node:
                 #    self.insertNode(Node(node=i))     # Alternative way.
                 # Needs perfomance testing.
 
-    def setParent(self, node):
-        "Set the node's parent node."
-        warnings.warn('getParent should not be called, just use Node.parent', DeprecationWarning)
-        self.parent = node
-
-    def getParent(self):
-        "return the node's parent node."
-        warnings.warn('setParent should not be called, just use Node.parent', DeprecationWarning)
-        return self.parent
-
     def getName(self):
         "Set the node's tag name."
         warnings.warn('getName should not be called, just use Node.name', DeprecationWarning)
@@ -149,11 +139,6 @@ class Node:
         "Returns the nodes namespace."
         warnings.warn('getNamespace should not be called, just use Node.namespace', DeprecationWarning)
         return self.namespace
-
-    def setNamespace(self, namespace):
-        "Set the nodes namespace."
-        warnings.warn('setNamespace should not be called, just use Node.namespace', DeprecationWarning)
-        self.namespace = namespace
 
     def insertTag(self, name=None, attrs={}, payload=[], node=None):
         """ Add a child tag of name 'name' to the node.

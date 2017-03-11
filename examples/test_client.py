@@ -1,9 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
-# $Id: test_client.py,v 1.11 2003/11/08 06:37:36 snakeru Exp $
-
-# You may need to change the above line to point at
-# python rather than python2 depending on your os/distro
+"""A test jabber client. Use something like this frequently while
+you edit the library as an end-to-end test.
+You may need to change the above line to point at
+python rather than python2 depending on your os/distro
+"""
 
 import os
 import sys
@@ -11,11 +12,7 @@ from select import select
 from string import split, strip
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-
 import chupycabra
-
-# True = 1
-# False = 0
 
 # Change this to 0 if you dont want a color xterm
 USE_COLOR = 1
@@ -29,7 +26,7 @@ def usage():
     print "%s: a simple python jabber client " % sys.argv[0]
     print "usage:"
     print "%s <server> - connect to <server> and register" % sys.argv[0]
-    print "%s <server> <username> <password> <resource>" % sys.argv[0]
+    print "%s <server> <username@jabber.host> <password> <resource>" % sys.argv[0]
     print "            - connect to server and login   "
     sys.exit(0)
 
@@ -84,24 +81,24 @@ def doCmd(con, txt):
             print colorize("Bye!", 'red')
             sys.exit(0)
         elif cmd[0] == '/help':
-            print "commands are:"
-            print "   /select <jabberid>"
-            print "      - selects who to send messages to"
-            print "   /subscribe <jid>"
-            print "      - subscribe to jid's presence"
-            print "   /unsubscribe <jid>"
-            print "      - unsubscribe to jid's presence"
-            print "   /presence <jabberid> <type>"
-            print "      - sends a presence of <type> type to the jabber id"
-            print "   /status <status>"
-            print "      - set your presence status message"
-            print "   /show <status>"
-            print "      - set your presence show message"
-            print "   /roster"
-            print "      - requests roster from the server and "
-            print "        display a basic dump of it."
-            print "   /exit"
-            print "      - exit cleanly"
+            print('commands are:')
+            print("   /select <jabberid>")
+            print("      - selects who to send messages to")
+            print("   /subscribe <jid>")
+            print("      - subscribe to jid's presence")
+            print("   /unsubscribe <jid>")
+            print("      - unsubscribe to jid's presence")
+            print("   /presence <jabberid> <type>")
+            print("      - sends a presence of <type> type to the jabber id")
+            print("   /status <status>")
+            print("      - set your presence status message")
+            print("   /show <status>")
+            print("      - set your presence show message")
+            print("   /roster")
+            print("      - requests roster from the server and ")
+            print("        display a basic dump of it.")
+            print("   /exit")
+            print("      - exit cleanly")
         else:
             print colorize("uh?", 'red')
     else:
@@ -248,7 +245,7 @@ print colorize("Type /help for help", 'red')
 
 JID = Username + '@' + Server + '/' + Resource
 
-while (1):
+while True:
     inputs, outputs, errors = select([sys.stdin], [], [], 1)
 
     if sys.stdin in inputs:

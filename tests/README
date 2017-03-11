@@ -1,5 +1,17 @@
-Many tests need to be put here.  My original thought is to use unittest,
-since it's "batteries included" in python, and I'm sure people use it
-successfully.  Also, one of the end goals of chupycabra is for regular
-users (IT and QA people, say), to be able to understand it and use it
-quickly, tests are a good starting point for users.
+After you've set your python environment (2.7), cd to the tests directory and
+run pytest. After an initial run at doctest and unittest I decided to go with
+the more flexible pytest.
+
+The current example of the tests running:
+(chupyenv) ~/chupycabra/tests> pytest
+======================================== test session starts ========================================
+platform linux2 -- Python 2.7.13, pytest-3.0.1, py-1.4.31, pluggy-0.3.1
+rootdir: /home/andrew/Dropbox/PycharmProjects/chupycabra, inifile:
+collected 18 items
+
+test_jid.py ........
+test_protocol.py .
+test_roster.py .....
+test_xmlstream.py ....
+
+===================================== 18 passed in 0.02 seconds =====================================

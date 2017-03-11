@@ -19,22 +19,21 @@ case.
 """
 
 import socket
+import ssl
 import sys
 import time
-from select import select
-from base64 import encodestring
-import ssl
 import xml.parsers.expat
+from base64 import encodestring
+from select import select
+from xml.sax.saxutils import escape
+
 import warnings
+
 import debug
 
 _debug = debug
 
 __version__ = "0.1"
-
-# FIXME Bug 432064: use real True and False
-# False = 0
-# True  = 1
 
 # FIXME: I hate constants. ARD
 TCP = 1
@@ -55,22 +54,6 @@ DBG_XML = [DBG_XML_PARSE, DBG_XML_RAW]  # sample multiflag
 debug.debug_flags.append(DBG_CONN_ERROR)
 debug.debug_flags.append(DBG_XML_PARSE)
 debug.debug_flags.append(DBG_XML_RAW)
-
-
-def XMLescape(txt):
-    "Escape XML entities"
-    txt = txt.replace("&", "&amp;")
-    txt = txt.replace("<", "&lt;")
-    txt = txt.replace(">", "&gt;")
-    return txt
-
-
-def XMLunescape(txt):
-    "Unescape XML entities"
-    txt = txt.replace("&gt;", ">")
-    txt = txt.replace("&lt;", "<")
-    txt = txt.replace("&amp;", "&")
-    return txt
 
 
 # TODO: Do we really need our own error class? ARD
@@ -207,17 +190,17 @@ class Node:
                 s = s + " xmlns = '%s' " % self.namespace
         for key in self.attrs.keys():
             val = ustr(self.attrs[key])
-            s = s + " %s='%s'" % (key, XMLescape(val))
+            s += " %s='%s'" % (key, escape(val))
         s = s + ">"
         cnt = 0
         if self.kids is not None:
             for a in self.kids:
                 if (len(self.data) - 1) >= cnt:
-                    s = s + XMLescape(self.data[cnt])
+                    s = s + escape(self.data[cnt])
                 s = s + a._xmlnode2str(parent=self)
                 cnt = cnt + 1
         if (len(self.data) - 1) >= cnt:
-            s = s + XMLescape(self.data[cnt])
+            s = s + escape(self.data[cnt])
         if not self.kids and s[-1:] == '>':
             s = s[:-1] + ' />'
         else:
@@ -288,8 +271,8 @@ class NodeBuilder:
         elif self.__depth > self._dispatch_depth:
             self._ptr.kids.append(Node(tag=tag, parent=self._ptr, attrs=attrs))
             self._ptr = self._ptr.kids[-1]
-        else:  ## it the stream tag
-            if attrs.has_key('id'):
+        else:  # it is the stream tag
+            if 'id' in attrs:
                 self._incomingID = attrs['id']
         self.last_is_data = False
 
@@ -527,7 +510,7 @@ class Client(Stream):
 
         if self._proxy:
             self.DEBUG("Proxy connected", DBG_INIT)
-            if self._proxy.has_key('type'):
+            if 'type' in self._proxy:
                 type_ = self._proxy['type'].upper()
             else:
                 type_ = 'CONNECT'
@@ -545,7 +528,7 @@ class Client(Stream):
             connector.append('Pragma: no-cache')
             connector.append('Host: %s:%s' % (self._hostIP, self._port))
             connector.append('User-Agent: Chupycabra/' + __version__)
-            if self._proxy.has_key('user') and self._proxy.has_key('password'):
+            if 'user' and 'password' in self._proxy:
                 credentials = '%s:%s' % (self._proxy['user'],
                                          self._proxy['password'])
                 credentials = encodestring(credentials).strip()

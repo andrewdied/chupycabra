@@ -5,7 +5,6 @@ plain_node = chupycabra.xmlstream.Node()
 
 
 def test_node_getName():
-    assert plain_node.getName() == 'tag'
     assert plain_node.name == 'tag'
 
 
@@ -15,8 +14,6 @@ def test_node_getNamespace():
 
 
 def test_node_setName():
-    plain_node.setName('changedTag')
-    assert plain_node.getName() == 'changedTag'
     plain_node.name = 'againChangedTag'
     assert plain_node.name == 'againChangedTag'
 

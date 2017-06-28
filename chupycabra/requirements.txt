@@ -1,0 +1,4 @@
+dnspython~=1.14.0
+
+# pip -r requirements.txt
+# will install all of these with pip

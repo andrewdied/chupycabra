@@ -1,0 +1,7 @@
+# This requirements file is for DEVELOPER dependencies. If it's needed to run
+# the actual software, it will be in requirements.txt
+# I did a "pip install -e ." in a chupy src tree to install it locally into the pip env.
+# -e git+git@github.com:andrewdied/chupycabra.git@3dbaba3e4a17ae09e8f258da12cd83c3c79749bb#egg=chupycabra
+-r requirements.txt
+py~=1.4.31
+pytest~=3.0.1

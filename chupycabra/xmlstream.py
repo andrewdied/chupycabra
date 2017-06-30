@@ -195,11 +195,10 @@ class Node:
         if not found."""
         for node in self.kids:
             if node.getName() == name:
-                if not index:
+                if not index:   # also will pass when index decrements to 0
                     return node
                 if index is not None:
                     index -= 1
-        return None
 
     def getTags(self, name):
         """Like getTag but returns a list with matching child nodes"""

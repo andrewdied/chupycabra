@@ -109,11 +109,11 @@ class Node:
         self.name = val
 
     def putAttr(self, key, val):
-        "Add a name/value attribute to the node."
+        """Add a name/value attribute to the node."""
         self.attrs[key] = val
 
     def getAttr(self, key):
-        "Get a value for the node's named attribute."
+        """Get a value for the node's named attribute."""
         try:
             return self.attrs[key]
         except KeyError:
@@ -163,8 +163,6 @@ class Node:
 
     def __str__(self):
         return self._xmlnode2str()
-
-
 
     def _xmlnode2str(self, parent=None):
         """Returns an xml ( string ) representation of the node

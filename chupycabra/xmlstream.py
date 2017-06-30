@@ -507,8 +507,8 @@ class Client(Stream):
                 connector.append(u'PUT http://%s:%s/ HTTP/1.0' % (self._hostIP,
                                                                   self._port))
             else:
-                self.DEBUG("Proxy Error: unknown proxy type", DBG_CONN_ERROR)
-                raise error('Unknown proxy type: ' + type)
+                self.DEBUG('Proxy Error: unknown proxy type', DBG_CONN_ERROR)
+                raise error('Unknown proxy type: ' + type_)
             connector.append('Proxy-Connection: Keep-Alive')
             connector.append('Pragma: no-cache')
             connector.append('Host: %s:%s' % (self._hostIP, self._port))
@@ -519,9 +519,9 @@ class Client(Stream):
                 credentials = encodestring(credentials).strip()
                 connector.append('Proxy-Authorization: Basic ' + credentials)
             connector.append('\r\n')
+            reply = self.read().replace('\r', '')
             bak = self._read, self._write
             self.write('\r\n'.join(connector))
-            reply = self.read().replace('\r', '')
             self._read, self._write = bak
             try:
                 proto, code, desc = reply.split('\n')[0].split(' ', 2)

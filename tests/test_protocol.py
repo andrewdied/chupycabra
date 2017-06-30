@@ -1,5 +1,6 @@
-import chupycabra.chupycabra
-import chupycabra.xmlstream
+import chupycabra
+import pytest
+
 
 # iq is pretty staightforward
 thing = '''class Iq(Protocol):
@@ -37,6 +38,19 @@ iq_example = """
 <iq type='get' id='auth-get'><query xmlns = 'jabber:iq:auth' ><username>romeo</username></query></iq>
 """
 
-def test_create_protocol():
-    ard_protocol = chupycabra.chupycabra.Protocol('ard', to=None, type=None, attrs=None,
-                            frm=None, payload=[], node=None)
+
+def test_create_protocol_xdb():
+    xdb_protocol = chupycabra.Protocol('xdb', to=None, type=None, attrs=None,
+                                                  frm=None, payload=[], node=None)
+    assert xdb_protocol.__str__() == '<xdb />'
+
+def test_create_protocol_iq_get():
+    iq_get_protocol = chupycabra.Iq(type='get')
+    assert iq_get_protocol.__str__() == "<iq type='get' />"
+
+protocols = ['iq', 'message', 'presence', 'xdb', 'log']
+
+@pytest.mark.parametrize('protocol', protocols)
+def test_create_protocols_bare(protocol):
+    protocol_bare = chupycabra.Protocol(name=protocol)
+    assert protocol_bare.__str__() == "<%s />" % protocol

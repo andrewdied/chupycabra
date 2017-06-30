@@ -10,19 +10,19 @@
 
 __intro__
 
-Chupycabra is a Python module for the jabber instant messaging protocol.
+Chupycabra is a python module for the jabber instant messaging protocol.
 The library is forked from the jabberpy project, written by Matthew Allum.
 
-The eventual aim is to produce a fully featured easy to use library for
+The eventual aim is to produce an easy to use library for
 creating both jabber clients and servers, especially for use in testing
-and compliance sweets. 
+and compliance suites.
 
 Initial re-development is on python 2.7, and after it is cleaned up it will
-move to python 3.5.
+move to python 3.x.
 
-It is developed on Linux but may run happily on other Unix's and win32.
+It is developed on opensuse tumbleweed, and may run on other *nix platforms.
 
-__Usage__
+__usage__
 
 Chupycabra subclasses the xmlstream classs and provides the
 processing of jabber protocol elements into object instances as well as
@@ -192,7 +192,7 @@ class Connection(xmlstream.Client):
 
         self._expected = {}
 
-        self._id = 0
+        self._id = 0 # used for a 1-up counter, see getAnID() below
 
         self.lastErr = ''
         self.lastErrCode = 0
@@ -287,6 +287,7 @@ class Connection(xmlstream.Client):
         """
         self.handlers[tag_name] = {type: Proto, 'default': []}
 
+
     def registerHandler(self, name, handler, type_='', ns='', chained=False,
                         makefirst=False, system=False):
         """Sets the callback func for processing incoming stanzas.
@@ -333,6 +334,7 @@ class Connection(xmlstream.Client):
         else:
             self.handlers[name][type_ + ns].append({'chain': chained,
                                                     'func': handler, 'system': system})
+
 
     def setDisconnectHandler(self, func):
         """Set the callback for a disconnect.
@@ -399,7 +401,10 @@ class Connection(xmlstream.Client):
         return self.waitForResponse(ID, timeout)
 
     def getAnID(self):
-        """Returns a unique ID"""
+        """Returns a unique ID to the connection. This is a one-up counter.
+
+        :return: unicode text integer
+        """
         self._id = self._id + 1
         return ustr(self._id)
 
@@ -769,8 +774,10 @@ class Client(Connection):
 #############################################################################
 
 class Protocol(xmlstream.Node):
-    """Base class for jabber 'protocol elements' - messages, presences and iqs.
-       Implements methods that are common to all these"""
+    """Base class for jabber 'protocol elements': message, presence, and iq.
+       xdb and log are semi-frequent extensions to this list.
+       Protocol implements methods that are common to all of these.
+       """
 
     def __init__(self, name=None, to=None, type=None, attrs=None, frm=None,
                  payload=[], node=None):
@@ -785,6 +792,9 @@ class Protocol(xmlstream.Node):
         self._node = self
         xmlstream.Node.__init__(self, tag=name, attrs=attrs, payload=payload,
                                 node=node)
+
+    def __repr__(self):
+        return self.__str__()
 
     def getError(self):
         """Returns the error string, if any"""
@@ -801,15 +811,29 @@ class Protocol(xmlstream.Node):
             return None
 
     def setError(self, val, code):
-        """Sets an error string and code"""
+        """Sets an error string and code
+        TODO: I think this isn't used anywhere, and may not follow
+        xmpp error guidelines
+        """
         err = self.getTag('error')
         if not err:
             err = self.insertTag('error')
         err.putData(val)
         err.putAttr('code', str(code))
 
-    def __repr__(self):
-        return self.__str__()
+    def get(self, attr, default_return):
+        """Eventual replacement of the various get() methods.
+        attr -> str, values of to, type, id, from.
+        to and from need a little more work (JID magic)
+        Wait, I should just use getAttr, since it's in the base class. Or maybe
+        use get, which uses getAttr sometimes and the fancy JID thing
+        other times. Ponder.
+        TODO: replace the other get methods of Protocol.
+        """
+        try:
+            return self.getAttr(attr)
+        except:
+            return None
 
     def getTo(self):
         """Returns the 'to' attribute as a JID object."""

@@ -858,15 +858,25 @@ class Protocol(xmlstream.Node):
         return self.getAttr('id')
 
     def setTo(self, val):
-        """Sets the 'to' element to the given JID."""
+        """Sets the 'to' element to the given JID.
+        I suspect this and setFrom just use the unicode text version of the
+        JID to not embed objects in the xml. That makes sense. The automated
+        tests check using both JID objects and unicode strings.
+        TODO: add some checking for JID strings.
+        """
         self.putAttr('to', ustr(val))
 
     def setFrom(self, val):
-        """Sets the 'from' element to the given JID."""
+        """Sets the 'from' element to the given JID.
+        TODO: add some checking for valid JIDs."""
         self.putAttr('from', ustr(val))
 
     def setType(self, val):
-        """Sets the 'type' attribute of the protocol element"""
+        """Sets the 'type' attribute of the protocol element.
+        'error' is the only valid type for all three defined protocol types
+        RFC6120-core, section 8.1.3
+        TODO: add checking for the valid types.
+        """
         self.putAttr('type', val)
 
     def setID(self, val):
@@ -950,11 +960,12 @@ class Protocol(xmlstream.Node):
         """Sets the x tag's data to the given textual value."""
         self.insertTag('x').putData(val)
 
-    def fromTo(self):
+    def swap_from_to(self):
         """Swaps the element's from and to attributes.
            Note that this is only useful for writing components; if you are
            writing a Jabber client you shouldn't use this, because the Jabber
-           server will set the 'from' field automatically."""
+           server will set the 'from' field automatically.
+           """
         tmp = self.getTo()
         self.setTo(self.getFrom())
         self.setFrom(tmp)

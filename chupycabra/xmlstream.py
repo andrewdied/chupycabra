@@ -105,7 +105,7 @@ class Node:
 
     def setName(self, val):
         "Set the node's tag name."
-        warnings.warn('getName should not be called, just use Node.name', DeprecationWarning)
+        warnings.warn('setName should not be called, just use Node.name', DeprecationWarning)
         self.name = val
 
     def putAttr(self, key, val):
@@ -113,10 +113,10 @@ class Node:
         self.attrs[key] = val
 
     def getAttr(self, key):
-        "Get a value for the nodes named attribute."
+        "Get a value for the node's named attribute."
         try:
             return self.attrs[key]
-        except:
+        except KeyError:
             return None
 
     def putData(self, data):

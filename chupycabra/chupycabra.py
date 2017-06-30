@@ -851,13 +851,11 @@ class Protocol(xmlstream.Node):
 
     def getType(self):
         """Returns the 'type' attribute of the protocol element."""
-        try:
-            return self.getAttr('type')
+        return self.getAttr('type')
 
     def getID(self):
         """Returns the 'id' attribute of the protocol element."""
-        try:
-            return self.getAttr('id')
+        return self.getAttr('id')
 
     def setTo(self, val):
         """Sets the 'to' element to the given JID."""

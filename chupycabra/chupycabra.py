@@ -1225,12 +1225,17 @@ class Iq(Protocol):
                 id="ld823itz"
                 to="alice@wonderland.lit"
                 type="get">
-              <query xmlns="jabber:iq:croster"/>
+              <query xmlns="jabber:iq:roster"/>
            </iq>
 
         iq = Iq(from="alice@wonderland.lit/pda", to="alice@wonderland.lit",
                 type="get", query="jabber:iq:roster")
         FIXME: that is likely wrong.
+
+        IQ is covered in section 6, Exchanging IQ Stanzas, in RFC 6121.
+
+        'type' can be error, get, result, set. RFC 6120, search for
+        element name='iq'. Type is required.
        """
 
     def __init__(self, to=None, type=None, query=None, attrs=None,
@@ -1239,6 +1244,7 @@ class Iq(Protocol):
                           frm=frm, payload=payload, node=node)
         if query:
             self.setQuery(query)
+        #FIXME: type is required by RFC 6120 for iq stanzas.
 
     def _getTag(self, tag):
         try:
@@ -1260,10 +1266,13 @@ class Iq(Protocol):
         return self._getTag('list')
 
     def setList(self, namespace):
+        #FIXME: I don't see a list namespace in the RFCs.
         return self._setTag('list', namespace)
 
     def getQuery(self):
-        "returns the query namespace"
+        '''returns the query namespace. Really, just the namespace, like
+        'jabber:iq:privacy'.
+        '''
         return self._getTag('query')
 
     def setQuery(self, namespace):

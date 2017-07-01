@@ -37,6 +37,8 @@ def test_domain_jid_creation_parts():
 
 
 def test_get_stripped():
+    """When JID.getStripped() is fully removed, this test may be removed.
+    """
     full_jid_obj_stripped = JID(jid=full_jid)
     assert full_jid_obj_stripped.getStripped() == 'romeo@example.net'
     bare_jid_obj_stripped = JID(jid=bare_jid)

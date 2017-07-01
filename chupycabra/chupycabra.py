@@ -982,6 +982,9 @@ class Message(Protocol):
        The <message> attributes are to, from, id, and type.
        It can contain sub-elements of <body>, <subject>. and <thread>.
 
+       <message /> stanzas are described in section 5.2. Messaging in general
+       is in section 5.
+
        example:
        <message from"madhatter@wonderland.lit/foo"
                 to="alice@wonderland.lit"
@@ -1004,7 +1007,7 @@ class Message(Protocol):
             self.setBody(body)
         if subject:
             self.setSubject(subject)
-        # examine x tag and set timestamp if pressent
+        # examine x tag and set timestamp if present
         try:
             self.setTimestamp(self.getTag('x').getAttr('stamp'))
         except:
@@ -1031,11 +1034,10 @@ class Message(Protocol):
         except:
             return None
 
-    def getTimestamp(self):
-        return self.time_stamp
-
     def setBody(self, val):
-        """Sets the message body text."""
+        """Sets the message body text.
+        FIXME: I don't know why appending to the body is a good idea.
+        """
         body = self.getTag('body')
         if body:
             body.putData(val)
@@ -1043,7 +1045,9 @@ class Message(Protocol):
             body = self.insertTag('body').putData(val)
 
     def setSubject(self, val):
-        """Sets the message subject text."""
+        """Sets the message subject text.
+        FIXME: I don't know why appending to the subject is a good idea.
+        """
         subj = self.getTag('subject')
         if subj:
             subj.putData(val)
@@ -1063,7 +1067,7 @@ class Message(Protocol):
             val = time.strftime('%Y%m%dT%H:%M:%S', time.gmtime(time.time()))
         self.time_stamp = val
 
-    def buildReply(self, reply_txt=''):
+    def build_reply(self, reply_txt=''):
         """Returns a new Message object as a reply to itself.
            The reply message has the 'to', 'type' and 'thread' attributes
            automatically set."""
@@ -1074,10 +1078,6 @@ class Message(Protocol):
         if t:
             m.setThread(t)
         return m
-
-    def build_reply(self, reply_txt=''):
-        print "WARNING: build_reply method is obsolete. Use buildReply instead."
-        return self.buildReply(reply_txt)
 
 
 #############################################################################
@@ -1097,8 +1097,15 @@ class Presence(Protocol):
         presence = Presence(frm="alice@wonderland.lit/pda",
             show="xa", status="down the rabbit hole!")
 
-        http://xmpp.org/rfcs/rfc6120.html#schemas-client
+        http://xmpp.org/rfcs/rfc6120.html#schemas-client. This is section A.5,
+        look for <xs:element name='presence'> in the text file for the Client
+        namespace.
 
+        RFC 6121, section 3, describes managing presence subscriptions, and
+        section 4 describes exchanging presence information.
+
+        'type' attributes for presence may be any of error, probe, subscribe,
+        subscribed, unavailable, unsubscribe, or unsubscribed.
        """
 
     def __init__(self, to=None, type=None, priority=None, show=None,
@@ -1186,7 +1193,15 @@ class Presence(Protocol):
             self.insertTag('status').putData(val)
 
     def setPriority(self, val):
-        """Sets the presence priority"""
+        """Sets the priority of the resource. Description is found in RFC 6121,
+        section 4.7.2.3. It is an OPTIONAL parameter, with integer values
+        between -128 and +127. While servers MUST assume resources without
+        a priority are priority 0, do not blindly set blanks to 0.
+
+        Section 8 of RFC 6121 describes how to use priority in detail.
+        """
+        #TODO: check that it's an integer in the correct range.
+        #FIXME: Using integers gets AttributeErrors in sax. There's something deeply wrong here.
         pri = self.getTag('priority')
         if pri:
             pri.putData(val)

@@ -62,5 +62,4 @@ the scripts in examples/* .
 
 Notes
 -----
-* Name.  I like Red Vs Blue (http://redvsblue.com) and I've lived in a CHU
-(containerised housing unit).
+* Name.  I like Red Vs Blue (http://redvsblue.com) and I've lived in a CHU (containerised housing unit).

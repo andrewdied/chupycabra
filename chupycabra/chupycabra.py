@@ -1244,7 +1244,8 @@ class Iq(Protocol):
                           frm=frm, payload=payload, node=node)
         if query:
             self.setQuery(query)
-        #FIXME: type is required by RFC 6120 for iq stanzas.
+        # FIXME: type is required by RFC 6120 for iq stanzas.
+        # FIXME: Iq doesn't support id, and it must.
 
     def _getTag(self, tag):
         try:

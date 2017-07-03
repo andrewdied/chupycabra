@@ -1375,8 +1375,14 @@ class Roster:
         """Returns the name, groups, online, subscription (sub), ask, presence (show)
         or status value. Returns None if the item is not present.
 
-        Input is a JID string and a string of name, groups, online, sub, ask, show,
-        or status."""
+        Input is a bare JID (string) and info (string) of name, groups, online, sub, ask, show,
+        :jid: JID object or string (bare JID)
+        :info: the type of roster item, string of name, groups, online,
+                sub (subscription status), ask, show
+        or status.
+
+        The original comments showed online, show, and status as "extended", whatever that is.
+        """
 
         jid = ustr(jid)
         try:

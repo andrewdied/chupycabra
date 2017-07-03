@@ -40,11 +40,10 @@ TCP = 1
 STDIO = 0
 TCP_SSL = 2
 
-ENCODING = 'utf-8'  # Though it is uncommon, this is the only right setting.
+ENCODING = 'utf-8'
 ustr = str
 
-BLOCK_SIZE = 1024  ## Number of bytes to get at at time via socket
-## transactions
+BLOCK_SIZE = 1024  # Number of bytes to get at at time via socket
 
 DBG_INIT, DBG_ALWAYS = debug.DBG_INIT, debug.DBG_ALWAYS
 DBG_CONN_ERROR = 'conn-error'
@@ -66,7 +65,14 @@ class error:
 
 
 class Node:
-    """A simple XML DOM like class"""
+    """A simple XML DOM-like class.
+    'node' is self-referential. If you have a node you can pass it in and it
+     will create the node.
+    'tag' is the xml stanza name. This winds up in self.name. It has to be set
+     on node creation (or pass in an already created node).
+     'attrs' is a dictionary of {'attribute': 'value'} that becomes
+     <tag attribute='value' />
+    """
 
     def __init__(self, tag=None, parent=None, attrs={}, payload=[], node=None):
         if node:
@@ -97,6 +103,11 @@ class Node:
                 self.insertXML(i)
                 #    self.insertNode(Node(node=i))     # Alternative way.
                 # Needs perfomance testing.
+
+
+    def __str__(self):
+        return self._xmlnode2str()
+
 
     def getName(self):
         "Set the node's tag name."
@@ -161,8 +172,6 @@ class Node:
         self.kids.append(newnode)
         return newnode
 
-    def __str__(self):
-        return self._xmlnode2str()
 
     def _xmlnode2str(self, parent=None):
         """Returns an xml ( string ) representation of the node

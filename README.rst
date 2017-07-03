@@ -52,10 +52,10 @@ wheel (0.29.0)
 The examples directory contains some simple jabber based programs which 
 use the library. See examples/README
 
-Documentaion
-------------
-The modules contain embedded docmentation, use pydoc to present this is 
-a nice readable format. 
+Documentation
+-------------
+The internal docstrings are slowly improving. You will need to learn things
+the slow way for now, reading the examples, tests, and code.
 
 Also see the protocol documentation on jabber.org and the source code for
 the scripts in examples/* . 

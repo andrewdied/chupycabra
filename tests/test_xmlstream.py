@@ -1,5 +1,4 @@
 import chupycabra.xmlstream
-import pytest
 import xml.etree.ElementTree as ET
 
 plain_node = chupycabra.xmlstream.Node()
@@ -22,6 +21,9 @@ iq_stanza = """<iq id='hf61v3n7'
          </query>
        </iq>
        """
+body_text = 'My ears have not yet drunk a hundred words'
+thread_text = 'e0ffe42b28561960c6b12b944a092794b9683a38'
+message_attrs = {'from': 'juliet@example.com', 'to': 'romeo@example.net', 'type':'chat', 'xml:lang': 'en'}
 
 
 def test_node_get_name():
@@ -72,3 +74,26 @@ def test_etree_node():
     jid_node.putAttr('group', 'Friends')
     et_jid_node = ET.fromstring("<item jid='juliet@example.com' name='Juliet' group='Friends' />")
     assert ET.fromstring(jid_node.__str__()).attrib == et_jid_node.attrib
+
+
+def test_xmlstream_node_create_data():
+    node = chupycabra.xmlstream.Node(tag='body')
+    node.putData(body_text)
+    assert node.getData() == body_text
+
+def test_xmlstream_node_create_2x_data():
+    node = chupycabra.xmlstream.Node(tag='body')
+    node.putData(body_text)
+    node.putData(body_text)
+    assert node.getData() == body_text + body_text
+
+
+def test_xmlstream_node_insert_tag():
+    node = chupycabra.xmlstream.Node(tag='message', attrs=message_attrs)
+    node.insertTag('body')
+    node.insertTag(name='thread')
+    #assert node.__str__() == "<message from='{}' to='{}' type='{}' xml:lang='{}'<body /><thread /></message>".format(message_attrs['from'],
+     #                           message_attrs['to'], message_attrs['type'], message_attrs['xml:lang'])
+    et_node = ET.fromstring("<message from='{}' to='{}' type='{}' xml:lang='{}'><body /><thread /></message>".format(message_attrs['from'], message_attrs['to'], message_attrs['type'], message_attrs['xml:lang']))
+    generated_text = "<message from='juliet@example.com' to='romeo@example.net' type='chat' xml:lang='en'><body /><thread /></message>"
+"<message from='juliet@example.com' to='romeo@example.net' type='chat' xml:lang='en'<body /><thread /></message>"

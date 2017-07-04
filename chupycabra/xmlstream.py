@@ -68,8 +68,8 @@ class Node:
     """A simple XML DOM-like class.
     'node' is self-referential. If you have a node you can pass it in and it
      will create the node.
-    'tag' is the xml stanza name. This winds up in self.name. It has to be set
-     on node creation (or pass in an already created node).
+    'tag' is the xml stanza name. This winds up in self.name. It can be
+    changed after instanziation by setting Node.name.
      'attrs' is a dictionary of {'attribute': 'value'} that becomes
      <tag attribute='value' />
     """
@@ -88,6 +88,7 @@ class Node:
             self.parent = 'tag', '', {}, [], [], None
 
         if tag:
+            # FIXME. This is really convoluted. Look through where Nodes are created, see if namespaces are passed in with tag.
             self.namespace, self.name = ([''] + tag.split())[-2:]
 
         if parent:
@@ -107,7 +108,6 @@ class Node:
 
     def __str__(self):
         return self._xmlnode2str()
-
 
     def getName(self):
         "Set the node's tag name."
@@ -131,20 +131,19 @@ class Node:
             return None
 
     def putData(self, data):
-        "Set the nodes textual data"
+        """Set the node's textual data.
+        self.data begins as an empty list.
+        """
         self.data.append(data)
 
     def insertData(self, data):
-        "Set the nodes textual data"
+        """Set the node's textual data"""
+        warnings.warn('insertData is a duplicate of putData. Use putData. Neither should actually exist, and become properties.', DeprecationWarning)
         self.data.append(data)
 
     def getData(self):
         "Return the nodes textual data"
         return ''.join(self.data)
-
-    def getDataAsParts(self):
-        "Return the node data as an array"
-        return self.data
 
     def getNamespace(self):
         "Returns the nodes namespace."
@@ -172,10 +171,13 @@ class Node:
         self.kids.append(newnode)
         return newnode
 
-
     def _xmlnode2str(self, parent=None):
         """Returns an xml ( string ) representation of the node
-         and it children"""
+         and its children.
+         FIXME: Needs refactoring. It doesn't display all the data in the
+         self.data list, and chokes on non-text. Things like priority /have/ to
+         be integers. And 'kids' is silly.
+         """
         s = "<" + self.name
         if self.namespace:
             if parent and parent.namespace != self.namespace:

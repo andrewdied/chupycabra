@@ -1,4 +1,9 @@
-    8 A. R. Diederich <various>
+    9 A. R. Diederich <2017-07-03>
+      Removed xmlstream.Node.getDataAsParts(). It was the same as Node.data and
+        completely unused.
+      Added more xmlstream.Node tests.
+
+    8 A. R. Diederich <2017-06-30>
       Added tests for presence, message, protocol.
       Slight code cleanup for duplicate functions, spurious retrun None.
 

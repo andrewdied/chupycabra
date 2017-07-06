@@ -73,6 +73,7 @@ class Node:
      'attrs' is a dictionary of {'attribute': 'value'} that becomes
      <tag attribute='value' />
     """
+    # TODO: The __eq__ check is nonexistant. Fix.
 
     def __init__(self, tag=None, parent=None, attrs={}, payload=[], node=None):
         if node:
@@ -108,6 +109,18 @@ class Node:
 
     def __str__(self):
         return self._xmlnode2str()
+
+    __repr__ = __str__
+
+    def __eq__(self, other):
+        """Unhelpful __eq__ documentation."""
+        if isinstance(other, self.__class__):
+            return self.__dict__ == other.__dict__
+        return Fales
+
+    def __ne__(self, other):
+        """Unhelpful __ne__ documentation."""
+        return not self.__eq__(other)
 
     def getName(self):
         "Set the node's tag name."
@@ -161,7 +174,17 @@ class Node:
         return newnode
 
     def insertNode(self, node):
-        "Add a child node to the node"
+        """Add a child node to the node.
+        TODO: since many of the other methods allow passing in a node (rather
+        than building the new node by pieces), see if we should either remove that
+        option for creating a node there, or removing this. I'm thinking the
+        former is more appropriate.
+
+        I also don't know why the insert is both inserting nodes, and returning the node.
+        I have to see if some of the calls are using that returned node.
+
+        :return: Node
+        """
         self.kids.append(node)
         return node
 

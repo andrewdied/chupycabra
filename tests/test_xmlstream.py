@@ -174,6 +174,7 @@ def test_xmlstream_x2str_no_int():
     full_node_text = full_node._xmlnode2str()
     assert full_node_text == "<presence to='nurse@example.com'><show>dnd</show></presence>"
 
+
 @pytest.mark.xfail(reason='_xmlnode2str chokes on integers')
 def test_xmlstream_x2str_int():
     full_node = chupycabra.xmlstream.Node(tag='presence', attrs={'to': 'nurse@example.com'})
@@ -185,3 +186,17 @@ def test_xmlstream_x2str_int():
     full_node.insertNode(priority_node)
     full_node_text = full_node._xmlnode2str()
     assert full_node_text == "<presence to='nurse@example.com'><show>dnd</show><priority>0</priority></presence>"
+
+
+def test_xmlstream_eq():
+    full_node_1 = chupycabra.xmlstream.Node(tag='presence', attrs={'to': 'nurse@example.com'})
+    full_node_2 = chupycabra.xmlstream.Node(tag='presence', attrs={'to': 'nurse@example.com'})
+    assert full_node_1 == full_node_2
+
+
+def test_xmlstream_ne():
+    full_node_1 = chupycabra.xmlstream.Node(tag='presence', attrs={'to': 'nurse@example.com'})
+    full_node_3 = chupycabra.xmlstream.Node(tag='presence', attrs={'to': 'romeo@example.net'})
+    assert full_node_1 != full_node_3
+
+

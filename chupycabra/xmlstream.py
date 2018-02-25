@@ -116,11 +116,6 @@ class Node:
         """Unhelpful __eq__ documentation."""
         if isinstance(other, self.__class__):
             return self.__dict__ == other.__dict__
-        return Fales
-
-    def __ne__(self, other):
-        """Unhelpful __ne__ documentation."""
-        return not self.__eq__(other)
 
     def getName(self):
         "Set the node's tag name."
@@ -396,7 +391,7 @@ class Stream(NodeBuilder):
     def write(self, raw_data):
         """Writes raw outgoing data. Blocks until done.
            If supplied data is not unicode string, ENCODING
-           is used for convertion. Avoid this!
+           is used for conversion. Avoid this!
            Always send your data as a unicode string."""
         if isinstance(raw_data, str):
             self.DEBUG('Non-utf-8 string "%s" passed to Stream.write! \

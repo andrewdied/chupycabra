@@ -519,6 +519,7 @@ class Client(Connection):
         self.send(auth_get_iq)
 
         auth_response = self.waitForResponse("auth-get")
+        # Is this why login takes so long? Is it waiting 30 seconds for auth-get?
         if auth_response == None:
             return False  # Error
         else:

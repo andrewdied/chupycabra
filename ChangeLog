@@ -1,3 +1,7 @@
+    10 A. R. Diederich <date>
+      Fales != False. Fixed misspelling in xmlstream.py. And then deleted
+        it, as it wasn't needed. And the bonus __ne__ def.
+
     9 A. R. Diederich <2017-07-03>
       Removed xmlstream.Node.getDataAsParts(). It was the same as Node.data and
         completely unused.
